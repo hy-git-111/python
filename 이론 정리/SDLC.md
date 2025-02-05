@@ -225,9 +225,9 @@ sw 생명주기가 중단되지 않도록 설계해야함
     * 웹 자동화
     : Selenium, Sypress
     * 단위테스트
-    JUnit, TestNG
+    : JUnit, TestNG
     * API
-    Postman
+    : Postman
 
 > <span style="color:darkgray">**개발자가 사용할 테스트 코드 짜야하므로 대세인 자바를 아는게 좋음  
 AI 관련된 것은 파이썬이 유리함**</span>
@@ -480,7 +480,7 @@ Agile 개발 방식의 철학
     : BDD에서 요구사항을 시나리오 형식으로 표현하기 위한 문법**</span>
 
     ````
-    Gherkin 언어를 사용하여 시나리오 작성 예시  
+    체르킨(Gherkin) 언어를 사용하여 시나리오 작성 예시  
 
     * Feafure : 기능의 대표 주제
     * Scenario : 특정 상황에서 시스템 동작 정의 
@@ -498,10 +498,121 @@ Agile 개발 방식의 철학
 제품 품질과 배포 속도 향상
 
 > <span style="color:darkgray">**CI : Continuous Integration, 지속적인 통합  
-CD : Continuous Delivery, 승인 후 지속적인 배포  
+CD : Continuous Delivery, 승인 후 지속적인 제공  
 CD : Continuous Deployment, 지속적인 자동 배포**</span>
 
 * CI/CD 프로젝트 관리 툴
     * TestRail : TC 관리 및 결과 분석
     * Zephyr : Jira와 통합된 테스트 관리
     * QTest : 대규모 프로젝트 관리
+
+### CI
+: 자동화된 테스트로 품질 보증, 개발 환경에 적용
+* CI 방법
+    1. 코드 변경사항을 메인 저장소(Main Repository)에 주기적으로 병합(Merge)  
+    : 가장 작은단위로 개발하고 통합해야함
+
+    2. 통합을 위한 단계(빌드, 테스트, 병합)의 자동화  
+    : 코드리뷰 후 주기적인 병합 > CI 서버에서 CI 스크립트를 통해 빌드와 테스트 자동 검토
+        * 주기적인 병합으로 코드 충돌 최소화(개발 생산성 향상)
+        * 작은 단위로 병합하므로 작은 단위로 버그 확인 가능 및 결함 수정 용이
+
+* 사용 툴
+    * Jenkins : 플러그인 지원으로 모든 환경에 적합
+    * Circle CI : 통합 도구, 클라우드 기반의 빠르고 간단한 설정
+
+<br/>
+
+### CD
+: 개발과 배포 주기 단축, Staging, Production 환경에 적용
+
+* CD 방법
+    1. 병합한 코드를 릴리즈할 준비
+    2. 릴리즈 검증(자동/수동)
+    3. 배포(Deploy)
+        * CD : Continuous Delivery, 승인 후 지속적인 제공  
+        * CD : Continuous Deployment, 지속적인 자동 배포
+
+* 사용 툴
+    * Jenkins : 플러그인 지원으로 모든 환경에 적합
+    * Gitlab CI/CD : GIt 저장소와 통합
+    * GitHub Action
+    * Docker : 컨테이너 기반 오픈소스 가상화 플랫폼
+    * Kubernetes : 컨테이너화된 애플리케이션을 자동 배포/확장
+    * Spinnaker : 멀티 클라우드를 지원하는 CD 플랫폼
+
+> <span style="color:darkgray">**조건부 실행과 환경 변수  
+조건부 실행 : 특정 조건에서만 CI/CD 단계 실행  
+환경 변수 : 빌드 및 배포에 필요한 설정을 동적으로 전달**</span>
+
+### CI/CD 파이프라인
+    : 코드의 빌드, 테스트, 배포 과정을 자동화한 워크플로우
+    Commit > Build > Test > Deploy
+
+    * 커밋(Commit)  
+    : 코드 저장소에 변경 사항을 저장하는것  
+    Active > Partially Committed > Commit > Committed  
+    (작업 완료 > 부분적 커밋 > 커밋 실행 > 커밋 완료)
+
+        > <span style="color:darkgray">**롤백(Rollback)
+        : 배포 후 문제가 발생했을 때 이전 버전으로 복구하는 작업  
+        Active - Failed - Rollback - Aborted**</span>
+
+    * 빌드(Build)  
+    : 소스코드를 실행 가능 상태로 컴파일하여 배포 준비를 완료하는것  
+    Maven, Gradle, npm, webpack
+
+    * 테스트(Test)  
+    : 단위테스트, 통합테스트, 종단 간 테스트(E2E Test)를 자동화 할 수 있음
+
+    * 배포(Deploy)  
+    : 스테이징 환경에서 테스트 수행 후 프로덕션 환경에 코드를 자동으로 배포
+
+<br/>
+
+### CI/CD 파이프라인 최적화
+* 병렬처리 강화
+* 캐싱을 활용한 파이프라인 최적화
+* 파이프라인 실행 트리거 조건 설정
+* 불필요한 단계 제거
+
+### CI/CD 모니터링 도구
+* Grafana
+* New Relic
+* Prometheus : CI/CD 파이프라인의 상태 및 성능 모니터링
+* SonarQube : CI/CD 환경에서 보안 취약점 탐지
+
+## QA Ops(QA + DevOps)
+* QA
+    * 품질 기준 설정 및 모니터링
+    * 자동화 테스트 작성 및 유지
+    * 결과 분석 및 리포트
+
+* DevOps(Development + Operation)
+    * 배포 자동화 및 환경 설정
+    * 운영 환경의 안정성 관리
+
+* QA Ops(DevOps + QA)
+    * 자동화와 지속적인 검증
+    * 테스트 코드 작성 및 유지
+    * 배포 이후 모니터링 데이터 분석(시스템 로그, 사용자 피드백과 성능 분석)
+    * 품질 기준을 CI/CD에 통합
+    * 테스트 자동화 툴 사용(Selenium, JUnit5, Pytest, Postman)
+
+* DevSecOps(DevOps + Security + QA)
+    * 개발, 보안, 운영이 통합된 직군을 나타내는 용어
+    * 전체 IT 라이프사이클에 걸쳐 보안을 공동의 가치로 통합
+
+    > <span style="color:darkgray">**DevOps를 위해서는 기본적으로 보안 관련 지식이 필요함**</span>
+
+* QA 자동화 도구
+: 빠른 피드백 제공으로 릴리즈 주기 단축
+    * Selenium
+        * WebDriver : 브라우저 제어
+        * Selenium Grid : 병렬 테스트 가능
+        * Selenium IDE : 테스트 기록 및 재생
+
+    * JUnit : Java기반의 단위테스트 도구
+    * TestNG : JUnit의 확장 버전, 병렬 실행, 테스트 그룹화, 데이터 기반 테스트 지원
+
+    > <span style="color:darkgray">**웹훅 : http에서 호스트를 열어둠, 이후 특정 이벤트가 생기면 때 실시간으로 알림을 받을 수 있는 기능**</span>
