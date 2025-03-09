@@ -8,23 +8,38 @@ driver.get(url)
 # 정적 요소 찾기(동적 요소는 js를 사용하여 Interactable 후 찾기)
 from selenium.webdriver.common.by import By
 
-element = driver.find_element(By.CSS_Selector, "css_selector")  # str로 반환
-element = driver.find_elements(By.CSS_Selector, "css_selector") # 리스트로 반환
+element = driver.find_element(By.CSS_SELECTOR, "css_selector")  # str로 반환
+element = driver.find_elements(By.CSS_SELECTOR, "css_selector") # 리스트로 반환
+
+# XPATH로 텍스트 기준 정적 요소 찾기
+from selenium.webdriver.common.by import By
+
+element = driver.find_element(By.XPATH, "//div[text()='찾을 텍스트']")  # 자식 노드가 없는 경우(텍스트 노드에 접근), '찾을 텍스트'가 있는 div 태그 찾기
+element = driver.find_element(By.XPATH, "//div[contains(normalize-space(), '찾을 텍스트')]")  # 자식태그가 있는 경우, 안정적인 탐색을 위해 요소 내부의 모든 텍스트를 하나의 문자열로 변환하여 '찾을 텍스트' 탐색
+element = driver.find_element(By.XPATH, "//div[contains(normalize-space(), '찾을 텍스트')]")  # 텍스트 노드에 접근, '찾을 텍스트'가 포함된 div 태그 찾기
+
+# XPATH로 형제 요소 찾기
+from selenium.webdriver.common.by import By
+
+one_sibling = driver.find_element(By.XPATH, '//div[@class="class-name1" and text()="텍스트"]')
+the_other_sibling = one_sibling.find_element(By.XPATH, 'following-sibling::div[@class="class-name2"]')
+
+# 동적 요소 찾기
+from selenium.webdriver.common.by import By
+import datetime
+
+today = datetime.date.today().strftime("%Y-%m-%d")
+element = driver.find_element(By.XPATH, f"//div[text()='{today}']")
 
 # 대기
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
-WebDriverWait(driver, 10)
-element = wait.until(EC.element_to_be_clickable((By.CSS_Selector, "css_selector"))) # 요소가 클릭 가능할 때까지 대기
-
-
-# confirmation_message = (By.ID, "confirmation_message")
-        # 단, expected_conditions은 element가 보일때까지
-        # WebDriver가 Wait해준다. 5초만
-element = wait.until(EC.visibility_of_element_located((By.CSS_Selector, "css_selector")))   # 눈에 보일때까지 대기
-element = wait.until(EC.presence_of_element_located((By.CSS_Selector, "css_selector"))) # 요소 위치가 나타날때까지 대기(표시 여부와 무관하게 html에 요소가 추가된경우)
+wait = WebDriverWait(driver, 10)
+element = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, "css_selector"))) # 요소가 클릭 가능할 때까지 대기
+element = wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, "css_selector")))   # 눈에 보일때까지 대기
+element = wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, "css_selector"))) # 요소 위치가 나타날때까지 대기(표시 여부와 무관하게 html에 요소가 추가된경우)
 
 # 새로고침
 driver.refresh()    # 페이지 새로고침을 하면 브라우저가 새로운 HTML을 로드한다.
@@ -48,8 +63,8 @@ driver.save_screenshot("/screenshot.png")    # 스크롤바가 스크린샷에 �
 from selenium.webdriver.common.by import By
 
 element = driver.find_element(By.CLASS_NAME, "className")
-normal_text = element.text
-hidden_text = element.get_attribute("textContent")  # .get_attribute() : 태그의 속성을 추출 > 숨겨진 텍스트 추출 가능
+normal_text = element.text  # .text : 정적 텍스트 추출
+hidden_text = element.get_attribute("textContent")  # .get_attribute() : 태그의 속성을 추출 > 숨겨진 텍스트 추출 가능, get_attribute("textContent") : 동적 텍스트 추출
 
 # 드롭다운 선택
 from selenium.webdriver.support.ui import Select
@@ -121,6 +136,23 @@ expected_text = "text100000"
 assert actual_text == expected_text, "실제 텍스트와 예상 텍스트가 일치하지 않습니다."
 print("UI 변경이 감지되지 않았습니다.")
 
+# 파일 처리
+import json
+
+data = {}
+with open("data.json", "w", encoding="utf-8") as f:    # w : 쓰기(저장)
+    json.dump(data, f, ensure_ascii=False, indent=4)    # 데이터 저장 시, 반복문으로 데이터 누락/중복/비정상 데이터 검사 후 저장하도록 한다.
+
+with open("data.json", "r") as f:   # r : 읽기(불러오기)
+    data = json.load(f)
+
+json_string = '''{}'''
+python_object = json.loads(json_string)   # JSON 문자열을 파이썬 객체로 불러오기(변환)
+
+python_dict = {}
+json_string = json.dumps(python_dict)   # 파이썬 딕셔너리를 JSON 문자열로 처리(변환)
+
+
 
 
 
@@ -147,3 +179,27 @@ driver.execute_script("arguemnts[0].style.display = 'black';", hidden_input)    
 
 # 요소 표시 상태 확인
 status = driver.execute_script("return document.getElementById('comfirmation_message').style.display;")
+
+# 날짜/시간 선택 필드 value 직접 주입
+date_input = []
+driver.execute_script("""
+    const input = arguments[0];  
+    input.setAttribute('value', arguments[1])
+    input.dispatchEvent(new Event('input', { bubbles: true}));
+    input.dispatchEvent(new Event('change', { bubbles: true }));
+""", date_input, "2025-03-01")  
+
+# 1. date_input, "2025-03-01"   : html <input> 요소인 date_input을 argument[0]에 전달, 날짜를 argument[1]에 전달함
+# 2. const input = argument[0];     : input 변수에 date_input 저장
+# 3. input.setAttribute('value', arguments[1])  : input 태그의 속성 설정, value를 arguments[1](날짜)로. 브라우저 이벤트 시스템이 감지하지 못해 사람이 한것처럼 이벤트를 발생시켜야함.
+# 4. input.dispatchEvent(new Event('input', { bubbles: true}));     : input 이벤트를 dispatch(발생시키기), 새 이벤트는 'input'(입력하기), 옵션은 {bubbles: true}(이벤트가 상위 요소로 전파되도록 설정)
+# 5. input.dispatchEvent(new Event('change', { bubbles: true }));   : input 이벤트를 dispatch(발생시키기), 새 이벤트는 'change'(변경하기), 옵션은 {bubbles: true}(이벤트가 상위 요소로 전파되도록 설정)
+
+# input 이벤트 : 사용자가 한 글자라도 입력하거나 삭제하면 발생하는 이벤트, dispatchEvent()로 발생시킬 수 있다.
+# change 이벤트 : 사용자가 입력 완료 후 다른 요소를 클릭하거나 Enter를 눌러 포커스를 잃을 때 발생하는 이벤트, dispatchEvent()로 발생시킬 수 있다.
+
+# argument : 인수, 함수를 동작하기 위한 숫자
+# parameter : 매개변수, 함수를 동작하기 위한 문자
+
+
+
