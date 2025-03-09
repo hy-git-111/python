@@ -14,8 +14,8 @@ json_string = '''{
 }'''
 
 python_object = json.loads(json_string)
-print(json_object)
+print(python_object)
 
-assert json_object["id"] == 1
-assert json_object["username"] == "gildongGo"
-assert json_object["families"]["dul-li"] == "dinosaur"
+assert python_object["id"] == 1
+assert python_object["username"] == "gildongGo"
+assert python_object["families"]["dul-li"] == "dinosaur"
