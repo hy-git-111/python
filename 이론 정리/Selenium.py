@@ -1,40 +1,40 @@
 # 브라우저 실행
-from selenium import webdriver
+from Selenium import webdriver
 
 driver = webdriver.Chrome()
 url = "https://www.google.com"
 driver.get(url)
 
 # 정적 요소 찾기(동적 요소는 js를 사용하여 Interactable 후 찾기)
-from selenium.webdriver.common.by import By
+from Selenium.webdriver.common.by import By
 
 element = driver.find_element(By.CSS_SELECTOR, "css_selector")  # str로 반환
 element = driver.find_elements(By.CSS_SELECTOR, "css_selector") # 리스트로 반환
 
 # XPATH로 텍스트 기준 정적 요소 찾기
-from selenium.webdriver.common.by import By
+from Selenium.webdriver.common.by import By
 
-element = driver.find_element(By.XPATH, "//div[text()='찾을 텍스트']")  # 자식 노드가 없는 경우(텍스트 노드에 접근), '찾을 텍스트'가 있는 div 태그 찾기
-element = driver.find_element(By.XPATH, "//div[contains(normalize-space(), '찾을 텍스트')]")  # 자식태그가 있는 경우, 안정적인 탐색을 위해 요소 내부의 모든 텍스트를 하나의 문자열로 변환하여 '찾을 텍스트' 탐색
-element = driver.find_element(By.XPATH, "//div[contains(normalize-space(), '찾을 텍스트')]")  # 텍스트 노드에 접근, '찾을 텍스트'가 포함된 div 태그 찾기
+element = driver.find_element(By.XPATH, '//div[text()="찾을 텍스트"]')  # '찾을 텍스트'가 있는 div 태그를 찾고, 직접 포함된 텍스트만 반환
+element = driver.find_element(By.XPATH, '//div[contains(@class, "찾을 텍스트")]')  # class(속성)에 '찾을 텍스트'가 포함된 div 태그 찾기, 자식태그가 있는 경우, 안정적인 탐색을 위해 요소 내부의 모든 텍스트를 하나의 문자열로 변환하여 '찾을 텍스트' 탐색
+element = driver.find_element(By.XPATH, '//div[contains(normalize-space(), "찾을 텍스트")]')  # '찾을 텍스트'가 포함된 div 태그를 찾고, 문자열의 앞뒤 공백을 제거한 후 연속된 공백을 하나의 공백으로 변환하여 반환(^^안^^^녕^^^!^^ > 안^녕^!)
 
 # XPATH로 형제 요소 찾기
-from selenium.webdriver.common.by import By
+from Selenium.webdriver.common.by import By
 
 one_sibling = driver.find_element(By.XPATH, '//div[@class="class-name1" and text()="텍스트"]')
 the_other_sibling = one_sibling.find_element(By.XPATH, 'following-sibling::div[@class="class-name2"]')
 
 # 동적 요소 찾기
-from selenium.webdriver.common.by import By
+from Selenium.webdriver.common.by import By
 import datetime
 
 today = datetime.date.today().strftime("%Y-%m-%d")
 element = driver.find_element(By.XPATH, f"//div[text()='{today}']")
 
 # 대기
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
+from Selenium.webdriver.common.by import By
+from Selenium.webdriver.support.ui import WebDriverWait
+from Selenium.webdriver.support import expected_conditions as EC
 
 wait = WebDriverWait(driver, 10)
 element = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, "css_selector"))) # 요소가 클릭 가능할 때까지 대기
@@ -52,7 +52,7 @@ driver.refresh()    # 페이지 새로고침을 하면 브라우저가 새로운
 # 이를 해결하기 위해 새로고침 후 요소를 다시 불러와야 함
 
 # 스크린샷 저장
-from selenium.webdriver.common.by import By
+from Selenium.webdriver.common.by import By
 
 element = driver.find_element(By.TAG_NAME, "body")
 element.save_screenshto()("/screenshot.png")    # <body> 태그를 스크린샷하면 스크롤바가 찍힘
@@ -60,44 +60,44 @@ element.save_screenshto()("/screenshot.png")    # <body> 태그를 스크린샷�
 driver.save_screenshot("/screenshot.png")    # 스크롤바가 스크린샷에 찍히지 않음
 
 # 텍스트 추출
-from selenium.webdriver.common.by import By
+from Selenium.webdriver.common.by import By
 
 element = driver.find_element(By.CLASS_NAME, "className")
 normal_text = element.text  # .text : 정적 텍스트 추출
 hidden_text = element.get_attribute("textContent")  # .get_attribute() : 태그의 속성을 추출 > 숨겨진 텍스트 추출 가능, get_attribute("textContent") : 동적 텍스트 추출
 
 # 드롭다운 선택
-from selenium.webdriver.support.ui import Select
-from selenium.webdriver.common.by import By
+from Selenium.webdriver.support.ui import Select
+from Selenium.webdriver.common.by import By
 
 dropdown = Select(driver.find_element(By.ID, "id"))
 dropdown.select_by_visible_text("option")
 
 # HTML 폼 요소 자동화 - 파일 업로드
-from selenium.webdriver.common.by import By
+from Selenium.webdriver.common.by import By
 
 input = driver.find_element(By.ID, "id")
 input.send_keys("D:\Hyeyoung\Web")
 
 # 얼럿창 처리
-from selenium.webdriver.common.alert import Alert
+from Selenium.webdriver.common.alert import Alert
 
 Alert.accept()
 
 # 확인창 처리
-from selenium.webdriver.common.alert import Alert
+from Selenium.webdriver.common.alert import Alert
 
 Alert.accept()  # 확인 선택
 Alert.dismiss() # 취소 선택
 
 # 프롬프트
-from selenium.webdriver.common.alert import Alert
+from Selenium.webdriver.common.alert import Alert
 
 Alert.send_keys("inputValue")
 
 
 # UI 변경 확인 : is_displayed()
-from selenium.webdriver.common.by import By
+from Selenium.webdriver.common.by import By
 
 message = driver.find_element(By.ID, "message")
 if message.is_displayed():
@@ -109,11 +109,32 @@ if not checkbox.is_selected():
     checkbox.click()
 
 # 버튼 활성화 확인 : is_enabled()
-from selenium.webdriver.common.by import By
+from Selenium.webdriver.common.by import By
 
 button = driver.find_element(By.ID, "submit_btn")
 if button.is_enabled():
     button.click()
+
+# 쿠키 처리
+from Selenium import webdriver
+
+driver = webdriver.Chrome()
+url = "www.naver.com"
+driver.get(url)
+
+cookie = driver.get_cookie(name)    # 특정 이름의 쿠키 가져오기 
+cookies = driver.get_cookies()  # 모든 쿠키 가져오기
+
+driver.add_cookie(  # 쿠키 추가하기
+    {
+        "name": "user1", 
+        "value": "abc123", 
+        "domain": "naver.com"
+    }
+    )
+
+driver.delete_cookie("user1")   # "user1" 쿠키 삭제
+driver.delete_all_cookies() # 모든 쿠키 삭제
 
 # 로그 설정
 import logging
@@ -152,13 +173,32 @@ python_object = json.loads(json_string)   # JSON 문자열을 파이썬 객체�
 python_dict = {}
 json_string = json.dumps(python_dict)   # 파이썬 딕셔너리를 JSON 문자열로 처리(변환)
 
+# csv 파일 처리
+import csv
+
+csv_data = []
+with open("data.csv", "w", encoding="utf-8") as f:  # data.csv를 w모드로 열기(내용 없음)
+    writer = csv.writer(f)  # csv 파일을 작성하는 writer 객체 생성 
+    writer.writerows(csv_data)  # 리스트의 리스트를 한번에 기록(저장)
+
+with open("data.csv", "r", encoding="utf-8") as f:  # data.csv를 r모드로 열기
+    reader = csv.reader(f)  # csv 파일을 작성하는 reader 객체 생성 
+    for row in reader:  # 데이터를 한 행씩 처리
+        print(row)
+
+
+
+
+
+
+
 
 
 
 
 
 # JS를 사용한 동적 페이지 제어
-from selenium import webdriver
+from Selenium import webdriver
 
 driver = webdriver.Chrome()
 driver.execute_script("JavaScript")
@@ -170,7 +210,7 @@ driver.execute_script("window.scrollBy(x, y);") # 현재 스크롤 위치에서 
 driver.execute_script("window.scrollTo(x, y);") # 좌표(0, 0)에서 x, y축으로 이동(단위 : 픽셀)
 
 # 특정 요소까지 스크롤 이동
-from selenium.webdriver.common.by import By
+from Selenium.webdriver.common.by import By
 element = driver.find_element(By.XPATH, "targetElement")
 driver.execute_script("arguments[0].scrollIntoView();", element)
 
