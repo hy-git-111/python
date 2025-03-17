@@ -1,6 +1,8 @@
 from selenium.webdriver.chrome.webdriver import WebDriver
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
+import user_data
+
 import clipboard
 import random
 import time
@@ -32,19 +34,17 @@ class LoginPage:
         
     # 로그인
     def input_user_data(self):
-        EMAIL = "neuro482@naver.com"
-        PASSWORD = "dpffltmQAxmfor!"    # 엘리스QA트랙! 영어로
         EMAIL_ID = "login-email-input"
         PASSWORD_ID = "login-password-input"
         LOGIN_BTN_CLASS_NAME = "_loginSubmitButton"
 
-        clipboard.copy(EMAIL)
+        clipboard.copy(user_data.EMAIL)
         email_input_box = self.driver.find_element(By.ID, EMAIL_ID)
         email_input_box.click()
         clipboard.paste()
         time.sleep(self.random_wait)
 
-        clipboard.copy(PASSWORD)
+        clipboard.copy(user_data.PASSWORD)
         password_input_box = self.driver.find_element(By.ID, PASSWORD_ID)
         password_input_box.click()
         clipboard.paste()
