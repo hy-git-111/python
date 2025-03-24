@@ -21,8 +21,13 @@ element = driver.find_element(By.XPATH, '//div[contains(normalize-space(), "찾�
 # XPATH로 형제 요소 찾기
 from Selenium.webdriver.common.by import By
 
-one_sibling = driver.find_element(By.XPATH, '//div[@class="class-name1" and text()="텍스트"]')
-the_other_sibling = one_sibling.find_element(By.XPATH, 'following-sibling::div[@class="class-name2"]')
+sibling = driver.find_element(By.XPATH, '//div[@class="class-name1" and text()="텍스트"]')
+next_sibling = sibling.find_element(By.XPATH, './/following-sibling::div[@class="class-name2"]')
+before_sibling = sibling.find_element(By.XPATH, './/preceding-sibling::span[@class="rct-checkbox"]')
+
+# XPATH로 자식 요소 찾기
+parent = driver.find_element(By.ID, 'parent')
+child = parent.find_element(By.XPATH, './/child::button[contains(@class, "rct-collapse-btn")]')
 
 # 동적 요소 찾기
 from Selenium.webdriver.common.by import By
@@ -36,10 +41,13 @@ from Selenium.webdriver.common.by import By
 from Selenium.webdriver.support.ui import WebDriverWait
 from Selenium.webdriver.support import expected_conditions as EC
 
-wait = WebDriverWait(driver, 10)
+driver.implicitly_wait(10)  # Implicit Wait, 암시적 대기, 요소 탐색 시 최대 대기 시간 지정
+
+wait = WebDriverWait(driver, 10)    # Explicit Wait, 명시적 대기 : 특정 조건 충족 시까지 대기
 element = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, "css_selector"))) # 요소가 클릭 가능할 때까지 대기
 element = wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, "css_selector")))   # 눈에 보일때까지 대기
 element = wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, "css_selector"))) # 요소 위치가 나타날때까지 대기(표시 여부와 무관하게 html에 요소가 추가된경우)
+
 
 # 새로고침
 driver.refresh()    # 페이지 새로고침을 하면 브라우저가 새로운 HTML을 로드한다.
