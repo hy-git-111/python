@@ -173,8 +173,8 @@
         params = [(1, 1), (2, 1), ("땡", ValueError)]
 
         @pytest.mark.parameterize("a, expected", params)
-        def test_name(num):
-            assert num == expected
+        def test_name(a):
+            assert a == expected
         ```
     * @pytest.skip(reason="미완성 기능") : 결과 출력 's'
     * @pytest.skipif(condition=True, reason="미완성 기능") : 특정 조건일 때 skip
