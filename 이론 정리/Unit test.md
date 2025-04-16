@@ -168,6 +168,12 @@
             yield   # fixture 실행 정지
             tearDown 코드   # 테스트 코드 실행 후 이어서 실행됨 
         ```
+        * scope 종류
+            * function : 기본값, 각 테스트케이스마다 실행
+            * class : 테스트 클래스(Test suit)마다 실행
+            * module : 모듈단위로 실행
+            * session : 전체 데스트 실행 중 한번만 실행
+            
     * @pytest.mark.parametrize() : 테스트 함수에 여러 개의 입력값을 제공하여 동일한 테스트를 반복 실행
         ```python
         params = [(1, 1), (2, 1), ("땡", ValueError)]
@@ -254,7 +260,77 @@ pytest 차상위디렉터리/파일명.py::특정함수 옵션/플러그인
         pytest tests/unit/ --reruns 3   # 실패한 테스트를 최대 3번까지 재시도
         ```
     * pytest-mock : mock 객체 생성 및 관리
-    
+
+</br>
+
+## API 테스트
+* request 객체
+    ```python
+    response.status_code    # return type int
+    response.text   # return type str, Body값 반환
+    response.json()   # API 서버의 응답에 따라 dict or list 형태로 Body값 반환
+    response.headers    # return type dict
+    response.elapsed    # return type timedelta(시/분/초, 0:00:00.120301)
+    response.elapsed.total_seconds()    # return type timedelta(초, 0.120301)
+    ```
+
+* GET
+    ```python
+    import requests
+
+    url = "htte://example.com"
+    header = {"Content-Type": "application/json"}
+    requests.get(url, headers = header)
+    ```
+
+* POST
+    ```python
+    import requests
+
+    url = "htte://example.com"
+    form_data = {"form": "data"}
+    requests.post(url, data=form_data)
+    ```
+
+    ```python
+    import requests
+
+    url = "htte://example.com"
+    body_data = {"userId": 1}
+    requests.post(url, json=body_data)
+    # json= 사용 시, 자동으로 헤더 추가(Content-Type: application/json)
+    ```
+
+* PUT
+    ```python
+    import requests
+
+    url = "htte://example.com"
+    update_data = {
+        "id": 1,
+        "title": "수정된 제목"
+        "body": "기존 body"}
+    requests.post(url, json=update_data)
+    ```
+
+* DELETE
+    ```python
+    import requests
+
+    url = "htte://example.com"
+    requests.delete(url)
+    ```
+
+### API 검증 항목
+* status code
+* header
+* elapsed time(응답 시간)
+* body 검증
+    * body 타입
+    * 값의 타입
+    * 특정 키 존재 여부
+    * 빈 문자열인지
+
 </br>
 
 # 코드 작성 시 참고사항
@@ -316,4 +392,3 @@ pytest 차상위디렉터리/파일명.py::특정함수 옵션/플러그인
 
     * Migration Tool
     : DB Schema 변경사항을 기록하고 관리하기 위한 마이그레이션 툴
-    
