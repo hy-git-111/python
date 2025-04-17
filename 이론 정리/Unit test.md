@@ -140,8 +140,10 @@
 
 ### pytest
 * 파일 구성
-    * conftest.py : fixture을 작성한 파일
-    * __init__ : 파일을 패키지로 인식하도록 함, pytest 실행 시 참조하는 테스트 환경 설정 파일
+    * conftest.py : fixture, Hook 함수등을 작성한 파일, 다른 모듈에서 별도의 import 없이 사용 가능
+
+    * __init__.py : 파일을 패키지로 인식하도록 함, pytest 실행 시 참조하는 테스트 환경 설정 파일
+
         ```python
         markers = api # 사용할 마크 지정
         addopts = -v -s   # 기본 실행 옵션 설정
@@ -149,6 +151,11 @@
         filterwarnings = ImportWarning    # 경고 필터링 설정
         log_cli = f"%Y-%m-%d %h:%m:%s - {message}"    # 로그 출력 설정
         ```
+
+    * pytest.ini : 테스트 경로, 마커설정(이름과 설명) 등 Warning 메세지 방지를 위해 pytest 실행 시 적용할 옵션 정의
+    
+    * requirements.txt : Pytest 관련 설치 파일을 작성한 파일(의존성 패키지 목록)
+
 </br>
 
 * pytest 실행 기본 패턴
@@ -162,17 +169,53 @@
     * @pytest.fixture() : 여러 테스트 파일에서 공통으로 사용하는 데이터나 환경 설정 코드 작성
         ```python
         #conftest.py
-        @pytest.fixture(scope="function", autouse=True) # scope : 실행 범위(주기), autouse : 테스트 함수에서 호출하지 않아도 fixture 자동 실행 여부
+        @pytest.fixture(scope="function", autouse=True)
+        # scope : 실행 범위(주기)
+        # autouse : 테스트 함수에서 호출하지 않아도 fixture 자동 실행
+
         def name():
             setUp 코드  # fixture 코드 실행
             yield   # fixture 실행 정지
-            tearDown 코드   # 테스트 코드 실행 후 이어서 실행됨 
+            tearDown 코드   # 테스트 코드 실행 후 이어서 실행됨
+
+        def base_url():
+            return "https://..."
+
+        def driver():
+            ...
+
+        def hook():
+            ...
         ```
+        
         * scope 종류
             * function : 기본값, 각 테스트케이스마다 실행
             * class : 테스트 클래스(Test suit)마다 실행
             * module : 모듈단위로 실행
             * session : 전체 데스트 실행 중 한번만 실행
+
+    * @pytest.skip(reason="미완성 기능") : 결과 출력 's'
+    * @pytest.skipif(condition=True, reason="미완성 기능") : 특정 조건일 때 skip
+
+    * @pytest.mark.name : 특정 테스트만 실행
+        ```python
+        # test_01.py
+        @pytest.mark.slow
+        def test_losw_tesk():
+            pass
+
+        @pytest.mark.smoke
+        def test_smoke_tesk():
+            pass
+        ...
+        ```
+        ```
+        pytest -m slow : 오래 걸리는 성능테스트만 실행
+        pytest -m smoke : 기본 기능 확인용 빠른 테스트
+        pytest -m api : api 호출 관련 테스트
+        pytest -m db : db연동 테스트
+        pytest -m regression : 리그레션 테스트
+        ```
             
     * @pytest.mark.parametrize() : 테스트 함수에 여러 개의 입력값을 제공하여 동일한 테스트를 반복 실행
         ```python
@@ -182,8 +225,6 @@
         def test_name(a):
             assert a == expected
         ```
-    * @pytest.skip(reason="미완성 기능") : 결과 출력 's'
-    * @pytest.skipif(condition=True, reason="미완성 기능") : 특정 조건일 때 skip
     * @pytest.mark.xfail(reason="버그 수정 전") : 실행 결과를 무조건 F로 출력
     * @pytest.mark.xfail(condition=True, reason="버그 수정 전") : 조건부로 실행 결과를 F로 출력
 
@@ -211,25 +252,7 @@ pytest 차상위디렉터리/파일명.py::특정함수 옵션/플러그인
 
 * 실행 옵션('pytest --help'로 조회 가능)
     * -v : verbose, 자세한 결과 출력
-    * -m : mark, 특정 마크(@pytest.mark) 지정 테스트만 실행
-        ```python
-        # test_01.py
-        @pytest.mark.slow
-        def test_losw_tesk():
-            pass
-
-        @pytest.mark.smoke
-        def test_smoke_tesk():
-            pass
-        ...
-        ```
-        ```
-        pytest -m slow : 오래 걸리는 성능테스트만 실행
-        pytest -m smoke : 기본 기능 확인용 빠른 테스트
-        pytest -m api : api 호출 관련 테스트
-        pytest -m db : db연동 테스트
-        pytest -m regression : 리그레션 테스트
-        ```
+    * -m 마커명: mark, 특정 마크(@pytest.mark) 지정 테스트만 실행
     * -q : quiet, 간략한 결과 출력
     * -x : 첫 번째 실패 시 즉시 종료
     * --html=파일명 : html 리포트 저장(pytest-html 필요)
@@ -259,11 +282,24 @@ pytest 차상위디렉터리/파일명.py::특정함수 옵션/플러그인
 
         pytest tests/unit/ --reruns 3   # 실패한 테스트를 최대 3번까지 재시도
         ```
-    * pytest-mock : mock 객체 생성 및 관리
+    * pytest-mock : mock 객체 생성 및 관리, 외부 API 호출에 대한 의존성 제거
+
+    * pytest-asyncio : 테스트 대상이 되는 API가 FastAPI, Starlette 등 비동기 방식으로 구현되었거나, API를 호출하는 클라이언트 코드가 aiohttp, httpx 등의 비동기 방식으로 작성되었을 때 pytest 실행 지원
 
 </br>
 
 ## API 테스트
+### API 검증 항목
+* status code
+* header
+* elapsed time(응답 시간)
+* body값 검증
+    * 값의 타입
+    * 특정 키 존재 여부
+    * 빈 문자열인지
+* schema validation(스키마 검증) : body의 타입 검증
+
+### HTTP 메서드 요청
 * request 객체
     ```python
     response.status_code    # return type int
@@ -280,7 +316,8 @@ pytest 차상위디렉터리/파일명.py::특정함수 옵션/플러그인
 
     url = "htte://example.com"
     header = {"Content-Type": "application/json"}
-    requests.get(url, headers = header)
+    response = requests.get(url, headers = header)
+    response.raise_for_status   # 상태코드가 4xx 이상이면 예외를 발생시킴
     ```
 
 * POST
@@ -289,7 +326,8 @@ pytest 차상위디렉터리/파일명.py::특정함수 옵션/플러그인
 
     url = "htte://example.com"
     form_data = {"form": "data"}
-    requests.post(url, data=form_data)
+    response = requests.post(url, data=form_data)
+    response.raise_for_status   # 상태코드가 4xx 이상이면 예외를 발생시킴
     ```
 
     ```python
@@ -297,8 +335,9 @@ pytest 차상위디렉터리/파일명.py::특정함수 옵션/플러그인
 
     url = "htte://example.com"
     body_data = {"userId": 1}
-    requests.post(url, json=body_data)
+    response = requests.post(url, json=body_data)
     # json= 사용 시, 자동으로 헤더 추가(Content-Type: application/json)
+    response.raise_for_status   # 상태코드가 4xx 이상이면 예외를 발생시킴
     ```
 
 * PUT
@@ -310,7 +349,8 @@ pytest 차상위디렉터리/파일명.py::특정함수 옵션/플러그인
         "id": 1,
         "title": "수정된 제목"
         "body": "기존 body"}
-    requests.post(url, json=update_data)
+    response = requests.post(url, json=update_data)
+    response.raise_for_status   # 상태코드가 4xx 이상이면 예외를 발생시킴
     ```
 
 * DELETE
@@ -318,18 +358,61 @@ pytest 차상위디렉터리/파일명.py::특정함수 옵션/플러그인
     import requests
 
     url = "htte://example.com"
-    requests.delete(url)
+    response = requests.delete(url)
+    response.raise_for_status   # 상태코드가 4xx 이상이면 예외를 발생시킴
     ```
 
-### API 검증 항목
-* status code
-* header
-* elapsed time(응답 시간)
-* body 검증
-    * body 타입
-    * 값의 타입
-    * 특정 키 존재 여부
-    * 빈 문자열인지
+### 스키마 검증
+* JSON Schema를 사용한 pytest 검증 예시  
+    API response
+
+    ```json
+    {
+    "userId": 1,
+    "username": "kim",
+    "isAdmin": false
+    }
+    ```
+
+    schema.json
+    
+    ```json
+    {
+    "type": "object",
+    "properties": {
+        "userId": { "type": "integer" },
+        "username": { "type": "string" },
+        "isAdmin": { "type": "boolean" }
+    },
+    "required": ["userId", "username", "isAdmin"]
+    }
+    ```   
+    test_schema.py
+
+    ```python
+    import requests
+    import pytest
+    from jsonschema import validate, ValidationError
+
+    # JSON 스키마를 Python dict로 변환
+    with open("schema.json", "r") as f:
+        user_schema = json.load(f)
+
+    # 테스트 함수
+    def test_user_response_schema():
+        response = requests.get("https://example.com/api/user/1")
+        data = response.json()
+
+        try:
+            validate(instance=data, schema=user_schema) 
+            # validate() : jsonschema 라이브러리 함수, 필드 누락, 타입 오류 등도 모두 검출
+            # instance = 실제 응답 JSON 데이터
+            # schema = JSON Schema
+
+        except ValidationError as e:
+            pytest.fail(f"❌ 스키마 검증 실패: {e.message}")
+            # pytest.fail() : assert대신 실패 선언
+    ```
 
 </br>
 
@@ -392,3 +475,12 @@ pytest 차상위디렉터리/파일명.py::특정함수 옵션/플러그인
 
     * Migration Tool
     : DB Schema 변경사항을 기록하고 관리하기 위한 마이그레이션 툴
+
+# Mocking
+* 라이브러리
+    * unittest.mock (Python 내장)
+    * pytest-mock (pytest 플러그인) : mocker fixture 제공
+    * responses (requests 전용) : requests 라이브러리 호출을 가로채 가짜 응답 반환
+
+* 관련 함수
+    * mocker.patch("mocking할 함수의 경로") : 지정한 경로의 객체를 Mock 객체로 생성
