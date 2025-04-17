@@ -12,13 +12,29 @@ element = driver.find_element(By.CSS_SELECTOR, "css_selector")  # str로 반환
 element = driver.find_elements(By.CSS_SELECTOR, "css_selector") # 리스트로 반환
 
 # XPATH로 텍스트 기준 정적 요소 찾기
+# // : 상대 경로, / : 절대 경로, @ : 속성
 from selenium.webdriver.common.by import By
 
+element = driver.find_element(By.XPATH, '//div[@id="ID"]')  # id가 'ID'인 div 태그를 찾아 반환
 element = driver.find_element(By.XPATH, '//div[text()="찾을 텍스트"]')  # '찾을 텍스트'가 있는 div 태그를 찾고, 직접 포함된 텍스트만 반환
 element = driver.find_element(By.XPATH, '//div[contains(@class, "찾을 텍스트")]')  # class(속성)에 '찾을 텍스트'가 포함된 div 태그 찾기, 자식태그가 있는 경우, 안정적인 탐색을 위해 요소 내부의 모든 텍스트를 하나의 문자열로 변환하여 '찾을 텍스트' 탐색
 element = driver.find_element(By.XPATH, '//div[contains(normalize-space(), "찾을 텍스트")]')  # '찾을 텍스트'가 포함된 div 태그를 찾고, 문자열의 앞뒤 공백을 제거한 후 연속된 공백을 하나의 공백으로 변환하여 반환(^^안^^^녕^^^!^^ > 안^녕^!)
+element = driver.find_element(By.XPATH, '//div[(text()="찾을 텍스트") and contains(@class, "찾을 텍스트")]')  # 텍스트가 '찾을 텍스트'이고 클래스 속성에 '찾을 텍스트'가 표함된 div 태그 찾기
 
-# XPATH로 형제 요소 찾기
+# XPATH로 조상 요소 찾기, ancestor:: 명시 필요
+from selenium.webdriver.common.by import By
+
+element = driver.find_element(By.ID, 'element') # 기준 요소
+ancestor = element.find_elements(By.XPATH, 'ancestor::div[@class="rct-collapse-btn"]')
+
+# XPATH로 부모 요소 찾기, parent:: 명시 필요
+from selenium.webdriver.common.by import By
+
+element = driver.find_element(By.XPATH, '//button[contains(@class, "rct-collapse-btn") and parent::div]')   # 기본 정석
+child = driver.find_element(By.XPATH, '//button[contains(@class, "rct-collapse-btn")]') # 버전 2
+parent = child.find_element(By.XPATH, '..') # .. = parent::node()
+
+# XPATH로 형제 요소 찾기, sibling:: 명시
 from selenium.webdriver.common.by import By
 
 sibling = driver.find_element(By.XPATH, '//div[@class="class-name1" and text()="텍스트"]')
@@ -26,21 +42,35 @@ next_sibling = sibling.find_element(By.XPATH, './/following-sibling::div[@class=
 before_sibling = sibling.find_element(By.XPATH, './/preceding-sibling::span[@class="rct-checkbox"]')
 
 # XPATH로 자식 요소 찾기
+from selenium.webdriver.common.by import By
+
 parent = driver.find_element(By.ID, 'parent')
-child = parent.find_element(By.XPATH, './/child::button[contains(@class, "rct-collapse-btn")]')
+child = parent.find_element(By.XPATH, './/child::button[contains(@class, "rct-collapse-btn")]') # 기본 정석
+child = parent.find_element(By.XPATH, './/button[contains(@class, "rct-collapse-btn")]')    # 생략 버전
+
+# XPATH로 자손 요소 찾기
+from selenium.webdriver.common.by import By
+
+parent = driver.find_element(By.ID, 'parent')
+descendant = parent.find_elements(By.XPATH, './/descendant::span[@class="rct-checkbox"]')   # 기본 정석
+descendant = parent.find_element(By.XPATH, './/span[@class="rct-checkbox"]')   # 생략 버전
 
 # CSS SELECTOR로 요소 찾기
 # 속성 선택자 방식
 from selenium.webdriver.common.by import By
 
 element = driver.find_elements(By.CSS_SELECTOR, 'button[class]') # class값과 상관없이 class 속성을 가진 모든 button 요소 탐색
-element = driver.find_elements(By.CSS_SELECTOR, 'button[class][id]')    # class 속성과 id 속성을 가진 모든 button 요소 탐색
+element = driver.find_elements(By.CSS_SELECTOR, 'button[class="class_1"][id="ID"]')    # class 속성과 id 속성을 가진 모든 button 요소 탐색
 
 element = driver.find_element(By.CSS_SELECTOR, 'button[class^="class"]')    # class 속성값이 "class"로 시작하는 요소
 element = driver.find_element(By.CSS_SELECTOR, 'button[class$="1"]')    # class 속성값이 "1"로 끝나는 요소
 
 element = driver.find_element(By.CSS_SELECTOR, 'button[class~="class_name_1"]')   # class 속성값이 "class_name_1"이거나 다중 속성값 중 "class_name_1"이 포함되는 요소
 element = driver.find_element(By.CSS_SELECTOR, 'button[class*="class"]')    # class 속성값의 일부에 "class"가 포함되는 요소
+
+element = driver.find_elements(By.CSS_SELECTOR, 'div p') # 자손 선택자, <div> 태그 하위에 있는 모든 <p> 태그 요소 탐색
+element = driver.find_element(By.CSS_SELECTOR, 'div+p') # 인접 형제 선택자, <div> 태그와 바로 이웃하는 형제요소 중 <p> 태그인 형제 요소 탐색
+element = driver.find_elements(By.CSS_SELECTOR, 'div~p') # 일반 형제 선택자, <div> 태그의 형제요소 중 <p> 태그인 형제 요소 모두 탐색
 
 # CSS SELECTOR로 요소 찾기
 # 클래스 체인 방식
@@ -99,6 +129,8 @@ from selenium.webdriver.common.by import By
 
 dropdown = Select(driver.find_element(By.ID, "id"))
 dropdown.select_by_visible_text("option")
+dropdown.select_by_value("option")
+dropdown.select_by_index("1")
 
 # HTML 폼 요소 자동화 - 파일 업로드
 from selenium.webdriver.common.by import By
