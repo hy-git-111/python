@@ -479,8 +479,72 @@ pytest 차상위디렉터리/파일명.py::특정함수 옵션/플러그인
 # Mocking
 * 라이브러리
     * unittest.mock (Python 내장)
-    * pytest-mock (pytest 플러그인) : mocker fixture 제공
-    * responses (requests 전용) : requests 라이브러리 호출을 가로채 가짜 응답 반환
+    * pytest-mock (pytest 플러그인)  
+        - **HTTP 요청이 발생하지 않도록** 내부 로직을 통째로 대체함  
+        - 플러그인 설치를 통해 @pytest.fixture 정의 없이 mocker를 fixture로 사용 가능
+        - API 호출, 함수, 메서드, 클래스 mocking 가능(독립적인 테스트 가능)
 
-* 관련 함수
-    * mocker.patch("mocking할 함수의 경로") : 지정한 경로의 객체를 Mock 객체로 생성
+        ```python
+        # app.py
+        # 사용자의 정보를 받아오는 함수
+
+        import requests
+
+        # 예외동작 지정 등 기능 확장을 위해 get_user() 사용
+        def get_user(user_id):
+            response = requests.get("https://api.example.com/user")
+            return {
+                "status_code": response.status_code,
+                "data": response.json()
+            }
+        ```
+
+        ```python
+        # test_app.py
+
+        import pytest
+        from app import get_user
+
+        # 매개변수로 mock을 받아와 @fixture 선언 없이도 mocker 사용 가능
+        def test_get_user_with_mocker(mocker):    
+            mock_response = mocker.Mock()   # Mock 객체 생성
+
+            # 가짜 응답 등록
+            mock_response.status_code = 200
+            mock_response.json.return_value = {"name": "Kim"}
+
+            # mocker.path() : app 모듈의 requests.get 함수를 mock.requests.get 함수로 대체
+            mocker.path("app.requests.get", return_value=mock_response)
+            
+            # 대체된 get_user() 내부의 requests.get이 mock 함수로 호출되어 결과 반환
+            user = get_user()
+
+            assert user["status_code"] == 200
+            assert user["data"]["name"] == "Kim"
+        ```
+
+    * responses (requests 전용)
+        - 실제 API URL로 **요청을 보내지만 네트워크 없이 응답을 직접 지정**  
+        - requests 라이브러리 호출을 가로채 가짜 응답 반환
+        - 명세 기반 테스트 가능
+
+        ```python
+        # test_app.py
+
+        @responses.activate # responses 활성화
+        def test_get_user_with_response():
+            # 가짜 응답 등록
+            responses.add(
+                responses.GET,
+                "https://api.example.com/user",
+                json={"name": "Kim"},
+                status=200
+            )
+
+            # GET 호출 시 API는 호출되지만 가짜 응답이 반환됨 
+            response = requests.get("https://api.example.com/user")
+            data = response.json()
+
+            assert response.status_code == 200
+            assert data["name"] == "Kim"
+        ```
