@@ -300,7 +300,7 @@ pytest 차상위디렉터리/파일명.py::특정함수 옵션/플러그인
 * schema validation(스키마 검증) : body의 타입 검증
 
 ### HTTP 메서드 요청
-* request 객체
+* response 객체
     ```python
     response.status_code    # return type int
     response.text   # return type str, Body값 반환
@@ -309,6 +309,8 @@ pytest 차상위디렉터리/파일명.py::특정함수 옵션/플러그인
     response.elapsed    # return type timedelta(시/분/초, 0:00:00.120301)
     response.elapsed.total_seconds()    # return type timedelta(초, 0.120301)
     ```
+
+    ![Ipython_res 객체가 가지고 있는 속성과 메서드 목록](./img/image-5.png)
 
 * GET
     ```python
