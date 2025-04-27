@@ -17,9 +17,17 @@ from selenium.webdriver.common.by import By
 
 element = driver.find_element(By.XPATH, '//div[@id="ID"]')  # id가 'ID'인 div 태그를 찾아 반환
 element = driver.find_element(By.XPATH, '//div[text()="찾을 텍스트"]')  # '찾을 텍스트'가 있는 div 태그를 찾고, 직접 포함된 텍스트만 반환
-element = driver.find_element(By.XPATH, '//div[contains(@class, "찾을 텍스트")]')  # class(속성)에 '찾을 텍스트'가 포함된 div 태그 찾기, 자식태그가 있는 경우, 안정적인 탐색을 위해 요소 내부의 모든 텍스트를 하나의 문자열로 변환하여 '찾을 텍스트' 탐색
-element = driver.find_element(By.XPATH, '//div[contains(normalize-space(), "찾을 텍스트")]')  # '찾을 텍스트'가 포함된 div 태그를 찾고, 문자열의 앞뒤 공백을 제거한 후 연속된 공백을 하나의 공백으로 변환하여 반환(^^안^^^녕^^^!^^ > 안^녕^!)
-element = driver.find_element(By.XPATH, '//div[(text()="찾을 텍스트") and contains(@class, "찾을 텍스트")]')  # 텍스트가 '찾을 텍스트'이고 클래스 속성에 '찾을 텍스트'가 표함된 div 태그 찾기
+element = driver.find_element(By.XPATH, '//div[contains(@class, "찾을 텍스트")]')   # class(속성)에 '찾을 텍스트'가 포함된 div 태그 찾기, 자식태그가 있는 경우, 안정적인 탐색을 위해 요소 내부의 모든 텍스트를 하나의 문자열로 변환하여 '찾을 텍스트' 탐색
+element = driver.find_element(By.XPATH, '//div[(text()="찾을 텍스트") and contains(@class, "찾을 텍스트")]')    # 텍스트가 '찾을 텍스트'이고 클래스 속성에 '찾을 텍스트'가 표함된 div 태그 찾기
+
+element = driver.find_element(By.XPATH, '//span[normalize-space()="찾을 텍스트"]')  # 앞/뒤/중간 공백 정규화 후 텍스트가 "텍스트"인 span 태그 반환(^^새^^소^식^^바로가기^^^ > 새소식 바로가기)
+element = driver.find_element(By.XPATH, '//span[contains(normalize-space(), "찾을 텍스트")]')   # '찾을 텍스트'가 포함된 div 태그를 찾고, 문자열의 앞뒤 공백을 제거한 후 연속된 공백을 하나의 공백으로 변환하여 반환(^^안^^^녕^^^!^^ > 안^녕^!)
+
+element = driver.find_element(By.XPATH, '//*[@data-testid="login-button"]') # data- 속성을 활용하면 고유속성처럼 사용할 수 있음(유지보수 용이)
+element = driver.find_element(By.XPATH, '//div[starts-with(@id, "user")')   # id가 "user"로 시작하는 input 반환
+
+element = driver.find_elements(By.XPATH, '(//li)[last()]')   # <li> 목록 중 마지막 요소 반환
+element = driver.find_elements(By.XPATH, '(//table/tbody/tr)[position()=3]')    # 테이블의 세 번째 행 요소 반환
 
 # XPATH로 조상 요소 찾기, ancestor:: 명시 필요
 from selenium.webdriver.common.by import By
@@ -38,8 +46,8 @@ parent = child.find_element(By.XPATH, '..') # .. = parent::node()
 from selenium.webdriver.common.by import By
 
 sibling = driver.find_element(By.XPATH, '//div[@class="class-name1" and text()="텍스트"]')
-next_sibling = sibling.find_element(By.XPATH, './/following-sibling::div[@class="class-name2"]')
-before_sibling = sibling.find_element(By.XPATH, './/preceding-sibling::span[@class="rct-checkbox"]')
+next_sibling = sibling.find_element(By.XPATH, './/following-sibling::div[@class="class-name2"]')    # 현재 노드 뒤에 있는 형제 요소
+before_sibling = sibling.find_element(By.XPATH, './/preceding-sibling::span[@class="rct-checkbox"]')    # 현재 노드 앞에있는 형제 요소
 
 # XPATH로 자식 요소 찾기
 from selenium.webdriver.common.by import By
@@ -55,8 +63,14 @@ parent = driver.find_element(By.ID, 'parent')
 descendant = parent.find_elements(By.XPATH, './/descendant::span[@class="rct-checkbox"]')   # 기본 정석
 descendant = parent.find_element(By.XPATH, './/span[@class="rct-checkbox"]')   # 생략 버전
 
-# CSS SELECTOR로 요소 찾기
-# 속성 선택자 방식
+# XPATH로 모든 앞/뒤 요소 찾기
+from selenium.webdriver.common.by import By
+
+current_element = driver.find_element(By.ID, '//td[text()="1"]')
+following = current_element.find_element(By.XPATH, 'following::td[1]')
+preceding = current_element.find_element(By.XPATH, 'preceding::td[1]')
+
+# CSS SELECTOR로 요소 찾기 - 속성 선택자 방식(태그[속성="속성값"])
 from selenium.webdriver.common.by import By
 
 element = driver.find_elements(By.CSS_SELECTOR, 'button[class]') # class값과 상관없이 class 속성을 가진 모든 button 요소 탐색
@@ -72,11 +86,23 @@ element = driver.find_elements(By.CSS_SELECTOR, 'div p') # 자손 선택자, <di
 element = driver.find_element(By.CSS_SELECTOR, 'div+p') # 인접 형제 선택자, <div> 태그와 바로 이웃하는 형제요소 중 <p> 태그인 형제 요소 탐색
 element = driver.find_elements(By.CSS_SELECTOR, 'div~p') # 일반 형제 선택자, <div> 태그의 형제요소 중 <p> 태그인 형제 요소 모두 탐색
 
-# CSS SELECTOR로 요소 찾기
-# 클래스 체인 방식
+# CSS SELECTOR로 요소 찾기 - 클래스 체인 방식
 from selenium.webdriver.common.by import By
 
 element = driver.find_element(By.CSS_SELECTOR, 'button.class')    # class 속성값이 "class"로 시작하는 요소
+
+# CSS SELECTOR로 요소 찾기 - 가상 클래스
+from selenium.webdriver.common.by import By
+
+element = driver.find_elements(By.CSS_SELECTOR, 'li:first-child')    # <li> 목록 중, 첫 번째 <li> 요소 탐색(li목록이 여러개일경우 여러개의 요소 반환됨)
+element = driver.find_elements(By.CSS_SELECTOR, 'button:last-child')    # <button> 목록 중, 마지막 <button> 요소 탐색
+element = driver.find_elements(By.CSS_SELECTOR, 'div:nth-child(1)')    # <div> 목록 중, 첫 번째 <div> 요소 탐색
+element = driver.find_elements(By.CSS_SELECTOR, 'tr:nth-child(odd)')    # <tr> 목록 중, 홀수 번째 <tr> 요소 탐색(odd number : 홀수)
+element = driver.find_elements(By.CSS_SELECTOR, 'tr:nth-child(2n)')    # <tr> 목록 중, 짝수 번째 <tr> 요소 탐색(even number : 짝수)
+element = driver.find_elements(By.CSS_SELECTOR, 'input:enabled')    # 활성화된 <input> 요소
+element = driver.find_elements(By.CSS_SELECTOR, 'input:disabled')    # 비활성화된 <input> 요소
+element = driver.find_elements(By.CSS_SELECTOR, 'input:checked')    # 체크된 <input> 요소
+element = driver.find_elements(By.CSS_SELECTOR, 'input:not([checked])')    # 체크되지 않은 모든 <input> 요소
 
 # 동적 요소 찾기
 from selenium.webdriver.common.by import By
@@ -92,10 +118,21 @@ from selenium.webdriver.support import expected_conditions as EC
 
 driver.implicitly_wait(10)  # Implicit Wait, 암시적 대기, 요소 탐색 시 최대 대기 시간 지정
 
-wait = WebDriverWait(driver, 10)    # Explicit Wait, 명시적 대기 : 특정 조건 충족 시까지 대기
-element = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, "css_selector"))) # 요소가 클릭 가능할 때까지 대기
-element = wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, "css_selector")))   # 눈에 보일때까지 대기
-element = wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, "css_selector"))) # 요소 위치가 나타날때까지 대기(표시 여부와 무관하게 html에 요소가 추가된경우)
+wait = WebDriverWait(driver, timeout=10, poll_frequency=0.5, ignored_exceptions=None)   # Explicit Wait, 명시적 대기, 특정 조건 충족 시까지 대기(driver, 대기시간, 재확인 주기, 무시할 예외 지정)
+
+wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, "css_selector"))) # 눈에 보일때까지 대기
+wait.until(EC.invisibility_of_element_located((By.CSS_SELECTOR, "css_selector")))   # 눈에 안보일때까지 대기
+wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, "css_selector")))   # 요소 위치가 나타날때까지 대기(표시 여부와 무관하게 html에 요소가 추가된경우)
+
+wait.until(EC.text_to_be_present_in_element((By.ID, "id"), "text"))    # 요소의 text 속성에 "text"가 포함될때까지 대기
+wait.until(EC.text_to_be_present_in_element_value((By.ID, "id"), "text"))   # 요소의 valu 속성에 "text"가 포함될때까지 대기
+
+wait.until(EC.element_to_be_clickable((By.ID, "id")))   # 요소가 클릭 가능할 때까지 대기
+wait.until(EC.element_to_be_selected(element))  # 요소가 선택 가능할 때까지 대기
+
+wait.until(EC.number_of_windows_to_be(2))   # 브라우저 수가 2개가 될때까지 대기(새 창으로 열기/닫기 시 사용)
+wait.until(EC.staleness_of(element))    # 요소의 상태가 변경될때까지 대기
+
 
 
 # 새로고침
@@ -139,20 +176,20 @@ input = driver.find_element(By.ID, "id")
 input.send_keys("D:\Hyeyoung\Web")
 
 # 얼럿창 처리
-from selenium.webdriver.common.alert import Alert
+alert = driver.switch_to.alert  # 현재 뜬 alert로 전환
+alert_text = alert.text # alert 텍스트 확인
 
-Alert.accept()
+alert.accept()  # alert / confirm 확인 선택
+alert.dismiss() # confirm 취소 선택
+alert.send_keys("inputValue")   # 프롬프트 입력
 
-# 확인창 처리
-from selenium.webdriver.common.alert import Alert
+# iframe 처리 (<iframe> : HTML 내부에 다른 HTML 페이지 삽입)
+# 모든 창 핸들 가져오기 > for 새 창 in 모든 창 > 새 창으로 전환 > 작업 후 원래 창 또는 최상위 프레임으로 전환
+driver.window_handles               # 모든 창 핸들 가져오기
+driver.switch_to.window(new_window_handle)  # 새 핸들(새 창)로 포커스 전환(WebElement 객체 / id / name 속성 / 인덱스 전달 가능)
+driver.switch_to.parent_frame()     # 상위 프레임으로 전환
+driver.switch_to.default_content()  # 최상위 프레임으로 전환
 
-Alert.accept()  # 확인 선택
-Alert.dismiss() # 취소 선택
-
-# 프롬프트
-from selenium.webdriver.common.alert import Alert
-
-Alert.send_keys("inputValue")
 
 
 # UI 변경 확인 : is_displayed()
@@ -173,6 +210,8 @@ from selenium.webdriver.common.by import By
 button = driver.find_element(By.ID, "submit_btn")
 if button.is_enabled():
     button.click()
+
+
 
 # 쿠키 처리
 from selenium import webdriver
@@ -195,26 +234,73 @@ driver.add_cookie(  # 쿠키 추가하기
 driver.delete_cookie("user1")   # "user1" 쿠키 삭제
 driver.delete_all_cookies() # 모든 쿠키 삭제
 
-# 로그 설정
+# 로그 설정 - basic config : 모든 테스트에 적용 가능
 import logging
 logging.basicConfig(
     filename="test_result.log",  # 로그 파일 경로
     level=logging.INFO,  # 로그 레벨 설정
-    format="%(asctime)s - %(message)s",  # 로그 포맷 지정
+    format="%(asctime)s - %(levelname) - %(message)s",  # 로그 포맷 지정
     encoding="utf-8"  # ✅ UTF-8 인코딩 적용
 )
 
 logging.info("테스트 시작")
 logging.warning("UI 요소 변경됨")
-logging.error("오류 발생")
+logging.error("오류 발생", exc_info=True)   # exc_info : stateless 사용 여부(stateless : 에러가 나면 터미널에 어떤 에러가 떴는지 파이썬 자체 메세지 출력)
 logging.exception("예외상황 발생")
 logging.info("테스트 종료")
+
+# 로그 설정 - log handler : 원하는 파일에 핸들러 지정 가능
+import logging
+from logging.handlers import RotatingFileHandler
+from logging.handlers import TimedRotatingFileHandler
+
+@pytest.fixture(scope="session", autouse=True)
+def configure_logging():
+    # 기본 로거 설정
+    logger = logging.getLogger()    # 로거 객체 생성
+    logger.setLevel(logging.DEBUG)  # 로거 자체의 최소 레벨 지정
+    formatter = logging.Formatter("%(asctime)s - %(levelname) - %(message)s")
+
+    # 스트림 핸들러 설정
+    stream_handler = logging.StreamHandler()    # 로그 메시지를 스트림(콘솔, 터미널 등)에 출력하는 스트림 핸들러 객체 생성
+    stream_handler.setLevel(logging.INFO)       # 스트림에 INFO 이상 메세지 출력
+    stream_handler.setFormatter(formatter)      # 출력할 메세지의 포멧 지정
+    logger.addHandler(stream_handler)           # 로거에 스트림 핸들러 연결
+    
+    # 파일 핸들러 설정
+    file_handler = logging.FileHandler("test.log", mode="a")    # 파일 핸들러 객체 생성
+    file_handler.setLevel(logging.DEBUG)    # test.log 파일에 DEBUG 이상 메세지 출력 
+    file_handler.setFormatter(formatter)    # 출력할 메세지의 포멧 지정
+    logger.addHandler(file_handler)         # 로거에 파일 핸들러 연결
+
+    # 용량 기반 로테이팅 핸들러 설정
+    rotating_handler = RotatingFileHandler(
+        "logfile.log",                  # 기본 파일명
+        maxBytes=1024 * 1024 * 5,       # 5MB 넘으면 새 파일로 교체
+        backupCount=3                   # 최대 3개까지 백업 (logfile.log.1, logfile.log.2, ...)
+    )
+    rotating_handler.setFormatter(formatter)    # 출력할 메세지의 포멧 지정
+    logger.addHandler(rotating_handler)         # 로거에 로테이팅 핸들러 연결
+
+    # 시간 기반 로테이팅 핸들러 설정
+    timed_handler = TimedRotatingFileHandler(
+        "timed_logfile.log",    # 기본 파일명
+        when="midnight",        # 변경 주기 ("S", "M", "H", "D", "midnight", "W0~W6")
+        interval=1,             # 1일마다 회전
+        backupCount=7,          # 최근 7일치만 유지
+        encoding="utf-8"
+    )
+    timed_handler.setFormatter(formatter)   # 출력할 메세지의 포멧 지정
+    logger.addHandler(timed_handler)        # 로거에 로테이팅 핸들러 연결
 
 # 자동 검증(assert 조건, 참일떄)
 actual_text = "text1"
 expected_text = "text100000"
 assert actual_text == expected_text, "실제 텍스트와 예상 텍스트가 일치하지 않습니다."
 print("UI 변경이 감지되지 않았습니다.")
+
+# 현재 페이지의 html 가져오기
+html = driver.page_source
 
 # 파일 처리
 import json
@@ -255,7 +341,6 @@ with open("data.csv", "r", encoding="utf-8") as f:  # data.csv를 r모드로 열
 
 
 
-
 # JS를 사용한 동적 페이지 제어
 from selenium import webdriver
 
@@ -267,17 +352,24 @@ driver.execute_script("window.scrollBy(x, y);") # 현재 스크롤 위치에서 
 
 # 페이지 스크롤(절대좌표)
 driver.execute_script("window.scrollTo(x, y);") # 좌표(0, 0)에서 x, y축으로 이동(단위 : 픽셀)
+driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")  # 스크롤 길이만큼 스크롤(= 화면을 맨 아래까지 스크롤)
 
 # 특정 요소까지 스크롤 이동
 from selenium.webdriver.common.by import By
+
 element = driver.find_element(By.XPATH, "targetElement")
-driver.execute_script("arguments[0].scrollIntoView();", element)
+driver.execute_script("arguments[0].scrollIntoView(true);", element)    # 요소가 뷰포트에 보일때까지 스크롤(true : 최상단 / false : 최하단)
+driver.execute_script("arguments[0].scrollIntoView({ behavior: 'smooth', block: 'start' });", element)  # 요소가 뷰포트에 보일때까지 부드럽게 스크롤(start : 최상단 / center : 화면 중앙 / end : 최하단)
+
 
 # 숨겨진 요소 찾기
 driver.execute_script("arguemnts[0].style.display = 'black';", hidden_input)    # 'display:none' 상태의 요소에는 적용 불가 
 
 # 요소 표시 상태 확인
 status = driver.execute_script("return document.getElementById('comfirmation_message').style.display;")
+
+# 요소 속성값 가져오기
+driver.execute_script("return arguments[0].value;", element)
 
 # 날짜/시간 선택 필드 value 직접 주입
 date_input = []
