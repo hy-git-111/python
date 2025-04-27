@@ -165,7 +165,7 @@
 
 </br>
 
-* pytest 데코레이터
+#### pytest 데코레이터
     * @pytest.fixture() : 여러 테스트 파일에서 공통으로 사용하는 데이터나 환경 설정 코드 작성
         ```python
         #conftest.py
@@ -230,6 +230,118 @@
 
 </br>
 
+#### 로그 설정
+* basic config  
+: 한 번에 기본적인 로깅 설정 가능
+
+    ```py
+    # log_handler.py
+    import logging
+
+    @pytest.fixture(scope="session", autouse=True)
+    def configure_logging():
+        logging.basicConfig(
+            filename="test_result.log",  # 로그 파일 경로
+            level=logging.INFO,  # 로그 레벨 설정
+            format="%(asctime)s - %(levelname) - %(message)s",  # 로그 포맷 지정
+            encoding="utf-8"  # ✅ UTF-8 인코딩 적용
+        )
+    ```
+
+    ```py
+    # test.py
+    import logging
+
+    class Test():
+        logger = logging.getLogger()
+
+        def test_example(self):
+            self.logger.info("테스트 시작")
+
+            try:
+                ...
+                
+            except Exception:
+                self.logger.warning("UI 요소 변경됨")
+                self.logger.error("오류 발생", exc_info=True)   # exc_info : stateless 사용 여부(stateless : 에러가 나면 터미널에 어떤 에러가 떴는지 파이썬 자체 메세지 출력)
+                self.logger.exception("예외상황 발생")
+
+            finally:
+                self.logger.info("테스트 종료")
+    ```
+
+* log handler  
+: 여러 개의 핸들러(콘솔, 파일, 네트워크 등)를 원하는 대로 추가/제어할 수 있음
+
+    ```py
+    import logging
+    from logging.handlers import RotatingFileHandler
+    from logging.handlers import TimedRotatingFileHandler
+
+    @pytest.fixture(scope="session", autouse=True)
+    def configure_logging():
+        # 기본 로거 설정
+        logger = logging.getLogger()    # 로거 객체 생성
+        logger.setLevel(logging.DEBUG)  # 로거 자체의 최소 레벨 지정
+        formatter = logging.Formatter("%(asctime)s - %(levelname) - %(message)s")
+
+        # 스트림 핸들러 설정
+        stream_handler = logging.StreamHandler()    # 로그 메시지를 스트림(콘솔, 터미널 등)에 출력하는 스트림 핸들러 객체 생성
+        stream_handler.setLevel(logging.INFO)       # 스트림에 INFO 이상 메세지 출력
+        stream_handler.setFormatter(formatter)      # 출력할 메세지의 포멧 지정
+        logger.addHandler(stream_handler)           # 로거에 스트림 핸들러 연결
+        
+        # 파일 핸들러 설정
+        file_handler = logging.FileHandler("test.log", mode="a")    # 파일 핸들러 객체 생성
+        file_handler.setLevel(logging.DEBUG)    # test.log 파일에 DEBUG 이상 메세지 출력 
+        file_handler.setFormatter(formatter)    # 출력할 메세지의 포멧 지정
+        logger.addHandler(file_handler)         # 로거에 파일 핸들러 연결
+
+        # 용량 기반 로테이팅 핸들러 설정
+        rotating_handler = RotatingFileHandler(
+            "logfile.log",                  # 기본 파일명
+            maxBytes=1024 * 1024 * 5,       # 5MB 넘으면 새 파일로 교체
+            backupCount=3                   # 최대 3개까지 백업 (logfile.log.1, logfile.log.2, ...)
+        )
+        rotating_handler.setFormatter(formatter)    # 출력할 메세지의 포멧 지정
+        logger.addHandler(rotating_handler)         # 로거에 로테이팅 핸들러 연결
+
+        # 시간 기반 로테이팅 핸들러 설정
+        timed_handler = TimedRotatingFileHandler(
+            "timed_logfile.log",    # 기본 파일명
+            when="midnight",        # 변경 주기 ("S", "M", "H", "D", "midnight", "W0~W6")
+            interval=1,             # 1일마다 회전
+            backupCount=7,          # 최근 7일치만 유지
+            encoding="utf-8"
+        )
+        timed_handler.setFormatter(formatter)   # 출력할 메세지의 포멧 지정
+        logger.addHandler(timed_handler)        # 로거에 로테이팅 핸들러 연결
+    ```
+
+    ```py
+    # test.py
+    import logging
+
+    class Test():
+        logger = logging.getLogger()
+
+        def test_example(self):
+            self.logger.info("테스트 시작")
+
+            try:
+                ...
+
+            except Exception:
+                self.logger.warning("UI 요소 변경됨")
+                self.logger.error("오류 발생", exc_info=True)   # exc_info : stateless 사용 여부(stateless : 에러가 나면 터미널에 어떤 에러가 떴는지 파이썬 자체 메세지 출력)
+                self.logger.exception("예외상황 발생")
+                
+            finally:
+                self.logger.info("테스트 종료")
+    ```
+
+</br>
+
 * assert 메서드
     ```python
     # add.py
@@ -242,6 +354,8 @@
     with pytest.raises(ValueError, match="양수만 입력 가능합니다."): # 예상되는 예외 입력, 예dhl 메세지
         add(1, b)   # 에러를 유발하는 코드
     ```
+
+</br>
 
 * 실행 명령어  
 ```
