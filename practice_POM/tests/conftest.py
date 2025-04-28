@@ -5,8 +5,10 @@ import pytest
 def driver():
     driver = webdriver.Chrome()
     url = "https://mall.ejeju.net/main/index.do"
+    driver.get(url)
+    driver.maximize_window()
 
-    yield driver.get(url)
+    yield driver
 
     driver.quit()
 
