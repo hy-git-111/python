@@ -9,3 +9,7 @@
 
 user_data.py
 /node_modules
+/practice_POM/src/pages/__pycache__
+/practice_POM/src/utils/__pycache__
+/practice_POM/tests/__pycache__
+/practice_POM/src/resource/__pycache__

@@ -3,12 +3,9 @@ from src.pages.main_page import MainPage
 from selenium.webdriver.remote.webdriver import WebDriver
 
 class TestMainPage():
-    def __init__(self, driver:WebDriver):
-        self.driver = driver
-
-    def test_header_search(self):
-        self.main_page = MainPage()
-        self.handler = Handler()
+    def test_header_search(self, driver):
+        self.main_page = MainPage(driver)
+        self.handler = Handler(driver)
 
         self.handler.start_log()
 

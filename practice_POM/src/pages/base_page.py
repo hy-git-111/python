@@ -1,12 +1,11 @@
 from selenium.webdriver.common.by import By
-from tests.conftest import driver
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.keys import Keys
 
-class BasePage(driver):
-    def __init__(self):
-        self.driver = driver()
+class BasePage():
+    def __init__(self, driver):
+        self.driver = driver
 
     def find_el(self, locator):
         return WebDriverWait(self.driver, 10).until(

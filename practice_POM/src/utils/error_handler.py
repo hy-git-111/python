@@ -1,8 +1,6 @@
 import logging
 from logging.handlers import TimedRotatingFileHandler
-import pytest
 from selenium.webdriver.remote.webdriver import WebDriver
-import sys
 import inspect
 
 # @pytest.fixture(scope="function", autouse=True)
