@@ -175,7 +175,7 @@
 
         def name():
             setUp 코드  # fixture 코드 실행
-            yield   # fixture 실행 정지
+            yield   # fixture 실행 정지, 테스트가 사용할 객체 입력
             tearDown 코드   # 테스트 코드 실행 후 이어서 실행됨
 
         def base_url():
@@ -283,7 +283,7 @@
         # 기본 로거 설정
         logger = logging.getLogger()    # 로거 객체 생성
         logger.setLevel(logging.DEBUG)  # 로거 자체의 최소 레벨 지정
-        formatter = logging.Formatter("%(asctime)s - %(levelname) - %(message)s")
+        formatter = logging.Formatter("%(asctime)s - %(levelname)s - %(message)s")
 
         # 스트림 핸들러 설정
         stream_handler = logging.StreamHandler()    # 로그 메시지를 스트림(콘솔, 터미널 등)에 출력하는 스트림 핸들러 객체 생성
@@ -372,6 +372,7 @@ pytest 차상위디렉터리/파일명.py::특정함수 옵션/플러그인
     * --html=파일명 : html 리포트 저장(pytest-html 필요)
     * --maxfail=N : N개 실패 시 실행 종료
     * -k "키워드" : keyword, '@pytest.mark'가 붙은 테스트만 실행
+    * -s : print()도 터미널에 출력
 
 </br>
 
