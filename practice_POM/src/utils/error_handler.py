@@ -88,3 +88,4 @@ class Handler():
         print(f"오류 발생: {error_type}")
         self.log_handler(message=f"{error_message}", level="error")
         self.driver.save_screenshot(self.screenshoot_path)
+        raise e
