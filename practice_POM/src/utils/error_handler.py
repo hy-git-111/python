@@ -82,6 +82,9 @@ class Handler():
 
     # 오류 발생 로그, 스크린샷 관리 함수
     def error_handler(self, e):
-        print(f"오류 발생: {e}")
-        self.log_handler(message=f"오류 발생: {e}", level="error")
+        error_type = type(e).__name__
+        error_message = f"{error_type}\n{e}"
+
+        print(f"오류 발생: {error_type}")
+        self.log_handler(message=f"{error_message}", level="error")
         self.driver.save_screenshot(self.screenshoot_path)
