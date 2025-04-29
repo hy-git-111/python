@@ -127,13 +127,12 @@ wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, "css_selector")))   
 wait.until(EC.text_to_be_present_in_element((By.ID, "id"), "text"))    # 요소의 text 속성에 "text"가 포함될때까지 대기
 wait.until(EC.text_to_be_present_in_element_value((By.ID, "id"), "text"))   # 요소의 valu 속성에 "text"가 포함될때까지 대기
 
-wait.until(EC.element_to_be_clickable((By.ID, "id")))   # 요소가 클릭 가능할 때까지 대기
-wait.until(EC.element_to_be_selected(element))  # 요소가 선택 가능할 때까지 대기
+wait.until(EC.element_to_be_clickable((By.ID, "id")))   # 버튼/input 요소가 클릭 가능할 때까지 대기
+wait.until(EC.element_to_be_selected(element))  # 체크박스/라디오버튼 요소가 선택 가능할 때까지 대기
 
 wait.until(EC.number_of_windows_to_be(2))   # 브라우저 수가 2개가 될때까지 대기(새 창으로 열기/닫기 시 사용)
 wait.until(EC.staleness_of(element))    # 요소의 상태가 변경될때까지 대기
-
-
+wait.until(EC.element_to_be_clickable)
 
 # 새로고침
 driver.refresh()    # 페이지 새로고침을 하면 브라우저가 새로운 HTML을 로드한다.
