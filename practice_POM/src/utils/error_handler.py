@@ -33,6 +33,7 @@ class Handler():
         
         self._log_setup()
 
+    # 로그 설정 함수
     def _log_setup(self):
         # 기본 로거 설정
         self.logger.setLevel(logging.DEBUG)

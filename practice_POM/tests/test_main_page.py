@@ -4,6 +4,7 @@ from src.utils.random_utils import RandomUtils
 from urllib.parse import quote
 
 class TestMainPage():
+    # 헤더 검색 테스트 함수
     def test_header_search(self, driver):
         self.main_page = MainPage(driver)
         self.handler = Handler(driver)
