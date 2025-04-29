@@ -506,8 +506,8 @@ CD : Continuous Deployment, 지속적인 자동 배포**</span>
     * Zephyr : Jira와 통합된 테스트 관리
     * QTest : 대규모 프로젝트 관리
 
-### CI
-: 자동화된 테스트로 품질 보증, 개발 환경에 적용
+### CI(Continuous Integration)
+: 지속적인 통합, 자동화된 테스트로 품질 보증, 개발 환경에 적용
 * CI 방법
     1. 코드 변경사항을 메인 저장소(Main Repository)에 주기적으로 병합(Merge)  
     : 가장 작은단위로 개발하고 통합해야함
@@ -523,7 +523,7 @@ CD : Continuous Deployment, 지속적인 자동 배포**</span>
 
 <br/>
 
-### CD
+### CD(Continuous Delivery/Deployment)
 : 개발과 배포 주기 단축, Staging, Production 환경에 적용
 
 * CD 방법
