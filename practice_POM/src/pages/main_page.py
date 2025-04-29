@@ -1,19 +1,21 @@
 from src.pages.base_page import BasePage
-from utils import main_page_locators, search_page_locator
-from src.utils.random_utils import RandomUtils
+from src.pages import main_page_locators, search_page_locator
 
 class MainPage():
     def __init__(self, driver):
         self.base_page = BasePage(driver)
-        self.random_utils = RandomUtils()
+        self.main_page_locators = main_page_locators
+        self.search_page_locators = search_page_locator
 
     def click_search_btn(self, locator):
         self.base_page.click(locator)
 
-    def input_keyword(self, locator, text):
-        self.base_page.input_text(locator, text)
+    def input_keyword(self, locator, keyword):
+        self.base_page.input_text(locator, keyword)
 
-
-        self.base_page.send_enter_key(main_page_locators.SEARCH_INPUT)
+    def header_search(self, keyword):
+        self.click_search_btn(self.main_page_locators.SEARCH_BTN)
+        self.input_keyword(self.main_page_locators.SEARCH_INPUT, keyword)
+        self.base_page.send_enter_key(self.main_page_locators.SEARCH_INPUT)
         
-        return self.base_page.find_el(search_page_locator.TITLE)
+        return self.base_page.find_el(self.search_page_locators.TITLE)
