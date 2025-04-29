@@ -22,12 +22,14 @@ class Handler():
 
         # 파일 생성
         today = datetime.date.today()
+        now = datetime.datetime.now()
+        date = now.strftime("%Y-%m-%d-%H-%M")
         
         os.makedirs(log_dir, exist_ok=True) # exist_ok=True : 이미 폴더가 있는 경우 pass
         os.makedirs(screenshoot_dir, exist_ok=True)
 
         self.log_file_path = os.path.join(log_dir, f'logfile_{today}.log')
-        self.screenshoot_path = os.path.join(screenshoot_dir, f'{self.test_case}_{today}.png')
+        self.screenshoot_path = os.path.join(screenshoot_dir, f'{self.test_case}_{date}.png')
         
         self._log_setup()
 
