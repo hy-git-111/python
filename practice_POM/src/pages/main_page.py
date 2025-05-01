@@ -1,4 +1,4 @@
-from src.pages.base_page import BasePage
+from base_page import BasePage
 from src.pages import main_page_locators, search_page_locator
 
 class MainPage():
