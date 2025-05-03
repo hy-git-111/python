@@ -546,9 +546,9 @@ CD : Continuous Deployment, 지속적인 자동 배포**</span>
 환경 변수 : 빌드 및 배포에 필요한 설정을 동적으로 전달**</span>
 
 ### CI/CD 파이프라인
-    : 코드의 빌드, 테스트, 배포 과정을 자동화한 워크플로우
-    Commit > Build > Test > Deploy
-
+: 코드의 빌드, 테스트, 배포 과정을 자동화한 워크플로우
+Commit > Build > Test > Deploy
+* CI/CD 파이프라인 단계
     * 커밋(Commit)  
     : 코드 저장소에 변경 사항을 저장하는것  
     Active > Partially Committed > Commit > Committed  
@@ -568,19 +568,54 @@ CD : Continuous Deployment, 지속적인 자동 배포**</span>
     * 배포(Deploy)  
     : 스테이징 환경에서 테스트 수행 후 프로덕션 환경에 코드를 자동으로 배포
 
+* 구성요소
+    * VCS(버전관리 시스템) : 소스 코드 이력 관리
+        * Git, GitHub, GitLab
+
+    * CI/CD 서버 : 파이프라인 실행
+        * Jenkins, GitHub Actions, GitLab CI/CD
+
+    * 빌드 도구 : 코드를 실행파일/아티팩트로 변환
+        * Maven, Gradle, npm, Webpack
+
+    * 테스트 도구 : 코드 품질 검증
+        * JUnit, Pytest, Cypress
+
+    * 아티팩트 저장소 : 빌드된 결과물 저장 및 버전 관리
+
+    * 배포 도구/환경 : 실행 환경에 코드 배포
+        * Terraform : 운영 환경 배포, 인프라 코드화(IaC)
+        
+    * 모니터링/로깅 : 배포 후 서비스 상태 확인 및 문제 추적
+        * Grafana
+        * New Relic
+        * Prometheus : CI/CD 파이프라인의 상태 및 성능 모니터링
+        * SonarQube : CI/CD 환경에서 보안 취약점 탐지
 <br/>
 
-### CI/CD 파이프라인 최적화
-* 병렬처리 강화
-* 캐싱을 활용한 파이프라인 최적화
-* 파이프라인 실행 트리거 조건 설정
-* 불필요한 단계 제거
+* CI/CD 파이프라인 최적화
+    * 병렬처리 강화
+    * 캐싱을 활용한 파이프라인 최적화
+    * 파이프라인 실행 트리거 조건 설정
+    * 불필요한 단계 제거
 
-### CI/CD 모니터링 도구
-* Grafana
-* New Relic
-* Prometheus : CI/CD 파이프라인의 상태 및 성능 모니터링
-* SonarQube : CI/CD 환경에서 보안 취약점 탐지
+* CI/CD 파이프라인 보안 강화 전략
+    * 정적 분석 보안 테스팅(SAST)
+        * 코드 커밋/빌드 시 소스코드 취약점 자동 검사
+        * SonarQube, Snyk Code 등
+
+    * 동적 분석 보안 테스팅(DAST)
+        * 실행 중인 애플리케이션 대상 취약점 스캔
+        * 스테이징 환경 등에서 수행
+        * OWASP, ZAP 등
+
+    * 소프트웨어 구성 분석(SCA)
+        * 사용하는 오픈소스 라이브러리 취약점 검사
+        * OWASP Dependency-Check, Snyk Open Source
+
+    * 컨테이너 이미지 스캔
+        * Docker 이미지 빌드 후 취약점 검사
+        * Trivy, Clair 등
 
 ## QA Ops(QA + DevOps)
 * QA
