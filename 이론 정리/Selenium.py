@@ -5,6 +5,21 @@ driver = webdriver.Chrome()
 url = "https://www.google.com"
 driver.get(url)
 
+# 브라우저 옵션 설정
+from selenium import webdriver
+
+options = webdriver.ChromeOptions()
+options.add_argument("--headless")
+
+driver = webdriver.Chrome(options=options)
+"""
+셀레니움 옵션
+--headless      : GUI 없이 브라우저 실행, 리소스 절약 가능, 병렬실행이나 젠킨스 사용 시 사용
+--start-maximized : 브라우저 최대화
+--disable-popup-blocking : 팝업 차단 비활성화, 페이지 로딩 속도 감소
+--disable-notifications : 브라우저 알림 비활성화
+"""
+
 # 정적 요소 찾기(동적 요소는 js를 사용하여 Interactable 후 찾기)
 from selenium.webdriver.common.by import By
 
