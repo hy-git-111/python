@@ -18,3 +18,4 @@ user_data.py
 /change_spreadsheet_TC_to_Prompt/__pycache__
 /change_spreadsheet_TC_to_Prompt/prompts
 change_spreadsheet_TC_to_Prompt/credentials.json
+.env
