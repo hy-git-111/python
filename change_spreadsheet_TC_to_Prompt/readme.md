@@ -4,7 +4,7 @@
 - OpenAI API 연동하여 프롬프트 전달
 
 1. 구글 스프레드시트 API 사용 설정
-[참고 링크 : IT만물상 Google Sheet 사용 (credentials.json)](https://posbar.tistory.com/260)
+[참고 링크 : IT만물상 - Google Sheet 사용 (credentials.json)](https://posbar.tistory.com/260)
 
 
 2. 라이브러리 설치
@@ -18,4 +18,20 @@
 pip install gspread oauth2client
 ```
 
-3. 
+3. claude 사용을 위한 설정
+[참고 링크 : kim90 - 클로드(Claude)와 함께하는 첫 걸음 빠른 시작 가이드] (https://kim90story.tistory.com/215)
+- 가상환경 활성화
+- 라이브러리 설치
+```
+pip install anthropic
+```
+- 환경변수 추가
+ANTHROPIC_API_KEY / api키
+- api 키 설정
+```
+setx ANTHROPIC_API_KEY "your-api-key-here"
+```
+- 현재 터미널에 api 키 적용
+```
+$env:ANTHROPIC_API_KEY="your-api-key-here"
+```
