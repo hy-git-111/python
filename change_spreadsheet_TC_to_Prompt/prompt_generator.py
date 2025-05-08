@@ -1,3 +1,5 @@
+from text_formatter import tc_formatter
+
 class PromptGenerator:
     # 테스트케이스 한 줄을 받아 저장하는 함수
     def __init__(self, row):
@@ -11,10 +13,7 @@ class PromptGenerator:
         steps = self.row.get("Steps", "")
         expected = self.row.get("Expected Result", "")
 
-        step_lines = [s.strip() for s in str(steps).split("\n") if s.strip()]
-        expected_lines = [e.strip() for e in str(expected).split("\n") if e.strip()]
-
-        prompt = f"""
+        content = f"""
 테스트 ID: {test_id}
 시나리오: {title}
 
@@ -22,12 +21,8 @@ class PromptGenerator:
 {precondition}
 
 재현 절차:
+{steps}
+기대 결과:
+{expected}
 """
-        for i, step in enumerate(step_lines, 1):
-            prompt += f"{i}. {step}\n"
-
-        prompt += "\n기대 결과:\n"
-        for i, expect in enumerate(expected_lines, 1):
-            prompt += f"{i}. {expect}\n"
-
-        return prompt
+        return tc_formatter(content)
