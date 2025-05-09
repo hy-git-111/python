@@ -36,4 +36,4 @@ for worksheet in worksheets:
 # 테스트코드 생성
 prompt_text = file_manager.read_prompt_json(sheet_name)
 response = generate_test_code(all_prompts)
-file_manager.save_test_code(sheet_name, response)
+file_manager.save_test_code(response, sheet_name)
