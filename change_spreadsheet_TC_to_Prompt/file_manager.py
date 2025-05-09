@@ -8,7 +8,7 @@ class FeileManager:
         os.makedirs(prompt_dir, exist_ok=True)
         os.makedirs(test_code_dir, exist_ok=True)
 
-    # 프롬프트를 .json으 저장하는 함수
+    # 프롬프트를 .json으로 저장하는 함수
     def save_prompt_json(self, prompt_data, filename):
         filepath = os.path.join(self.prompt_dir, f"{filename}.json")
         with open(filepath, "w", encoding="utf-8") as f:
@@ -18,8 +18,13 @@ class FeileManager:
     # 테스트코드를 .py로 저장하는 함수
     def save_test_code(self, response, sheet_name):
         filepath = os.path.join(self.test_code_dir, f"{sheet_name}.py")
+
+        full_text = ""
+        for chunk in response:
+            full_text += chunk or ""  # "" : None 방지
+        
         with open(filepath, "w", encoding="utf-8") as f:
-            f.write(response)
+            f.write(full_text)
 
         print(f"{sheet_name} 테스트 코드로 저장 완료")
 
