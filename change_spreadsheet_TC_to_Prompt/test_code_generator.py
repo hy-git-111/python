@@ -1,5 +1,6 @@
 from anthropic import Anthropic
-
+from anthropic import RateLimitError
+import time
 
 class TestCodeGenerator:
     def __init__(self, model_name, temperature, system_prompt, max_tokens_per_request):
@@ -27,6 +28,10 @@ class TestCodeGenerator:
             print(f"API 응답 생성 오류: {e}")
             raise  # 오류를 상위 함수로 전파
 
+        except RateLimitError as e:
+            print(f"Rate limit exceeded. Waiting before retry: {e.response.headers['retry-after']} seconds")
+            time.sleep(float(e.response.headers['retry-after']))
+
     # Claude API에 프롬프트를 전송하고 스트리밍 방식으로 응답을 반환하는 함수
     def generate_test_code(self, all_prompts, response=None, previous_response=""):
         messages = []
@@ -47,8 +52,8 @@ class TestCodeGenerator:
                     current_text += text_delta
                     self.generated_text += text_delta  # 생성된 텍스트 누적
                     yield event.delta.text  # 값 반환 및 일시중단
-                    
             print("응답 완료\n")
+
             return current_text
             
         except Exception as e:
@@ -87,8 +92,8 @@ class TestCodeGenerator:
             
             return result
         
-# 토큰 수를 체크하면서 코드 생성
-    def generate_code_with_token_check(self, all_prompts, max_total_tokens=180000):
+    # 토큰 수를 체크하면서 코드 생성
+    def generate_code_with_token_check(self, all_prompts, max_total_tokens):
         all_text = ""
         total_tokens = 0
         request_count = 0
@@ -101,6 +106,8 @@ class TestCodeGenerator:
         
         # 첫 번째 응답 생성
         print(f"\n--- 요청 {request_count + 1} 시작 ---")
+
+        time.sleep(1)  # Rate limit을 피하기 위해 잠시 대기
         response = self._create_response(
             messages, 
             self.max_tokens_per_request, 
@@ -129,6 +136,7 @@ class TestCodeGenerator:
             print(f"\n--- 요청 {request_count + 1} 시작 ---")
             remaining_tokens = min(self.max_tokens_per_request, max_total_tokens - total_tokens)
             
+            time.sleep(1)  # Rate limit을 피하기 위해 잠시 대기
             response = self._create_response(
                 continuation_prompt, 
                 remaining_tokens, 
