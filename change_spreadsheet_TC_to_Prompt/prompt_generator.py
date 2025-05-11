@@ -1,4 +1,4 @@
-from text_formatter import tc_formatter
+from result_formatter import tc_formatter
 
 class PromptGenerator:
     # 테스트케이스 한 줄을 받아 저장하는 함수
