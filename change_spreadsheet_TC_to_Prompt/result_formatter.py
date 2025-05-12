@@ -14,15 +14,22 @@ def tc_formatter(content):
     return formatted_content
 
 # api 응답에서 python 태그를 제거하는 함수
-def remove_python_tags(content):
-    if content.startswith("```python"):
-        content = content[len("```python"):].strip()
-    if content.endswith("```"):
-        content = content[:-len("```")].strip()
-    return content
+def remove_python_tags(content: str) -> str:
+    content = content.strip()
+    content = re.sub(r"^```python\s*", "", content, flags=re.IGNORECASE|re.MULTILINE)
+    content = re.sub(r"\s*```$", "", content, flags=re.MULTILINE)
+    return content.lstrip("\n")
 
 # api 응답에서 파일명과 내용 추출하는 함수
 def extract_filenames_and_contents(full_text):
-    pattern = r"#\s*([\w]+)\.[\w]+(.*?)#\s*[\w]+\.[\w]+|$"
+    pattern = r"#\s*([\w_]+)\.py\b(.*?)(?=(?:\n#\s*[\w_]+\.py\b)|\Z)"
     matches = re.findall(pattern, full_text, re.DOTALL)
-    return [(filename.strip(), content.strip()) for filename, content in matches]
+    
+    # 파일명 후처리: "_1." 제거
+    processed_matches = []
+    for filename, content in matches:
+        # "_1."과 같은 불필요한 부분 제거
+        filename = re.sub(r"_\d+\.\s*", "_", filename)  # "test_data_1. auth" -> "test_data_auth"
+        processed_matches.append((filename.strip(), content.strip()))
+
+    return processed_matches
