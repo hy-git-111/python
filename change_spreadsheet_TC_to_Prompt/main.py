@@ -1,6 +1,6 @@
 from spreadsheet_reader import GoogleSheetReader
 from prompt_generator import PromptGenerator
-from file_manager import FeileManager
+from file_manager import FileManager
 from test_code_generator import TestCodeGenerator
 from initial_prompt import ui_requirement
 import sys, time
@@ -11,7 +11,7 @@ sys.stdout.reconfigure(encoding='utf-8')
 
 # 설정
 CREDENTIALS = "credentials.json"
-SHEET_NAME = "엘리스_2차_3조_팀프로젝트"
+SHEET_NAME = "Copy of 엘리스_2차_3조_팀프로젝트_사본"
 OUTPUT_DIR = "prompts"
 MAX_REQ_TOKENS  = 8_000      # 요청당 최대 출력 토큰
 MAX_TOTAL_TOKENS = 180_000   # 전체 파일 한계
@@ -45,7 +45,7 @@ def process_sheet(sheet_name, worksheet, generator, file_manager):
 
 # 메인 실행
 reader = GoogleSheetReader(CREDENTIALS, SHEET_NAME)
-file_manager = FeileManager(OUTPUT_DIR)
+file_manager = FileManager(OUTPUT_DIR)
 
 worksheets = reader.get_worksheets()[1:]    # 첫 시트는 제외함
 
@@ -73,7 +73,7 @@ with concurrent.futures.ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
 
     # 작업 완료 시 결과 처리
     for future in concurrent.futures.as_completed(future_to_sheet):
-        sheet_name = future_to_sheet[future][3:]
+        sheet_name = future_to_sheet[future]
         try:
             result = future.result()
             results.append(result)
@@ -90,12 +90,11 @@ with concurrent.futures.ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
             results.append({"sheet": sheet_name, "status": "failed", "error": str(e)})
 
 # 모든 프롬프트 생성 작업이 완료될 때까지 기다림
-# concurrent.futures.wait(future_to_sheet)  # 모든 future가 완료될 때까지 기다림
 print("\n프롬프트 파일 생성 완료. 테스트 코드 생성 시작...")
 
 # 테스트 코드 생성 및 저장 (직렬 처리)
 for ws in worksheets:
-    sheet_name = ws.title[3:]
+    sheet_name = ws.title
     try:
         # 해당 워크시트의 프롬프트 가져오기
         all_prompts = all_prompts_dict.get(sheet_name, [])
