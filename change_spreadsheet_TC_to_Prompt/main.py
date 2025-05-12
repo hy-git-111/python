@@ -13,22 +13,28 @@ sys.stdout.reconfigure(encoding='utf-8')
 CREDENTIALS = "credentials.json"
 SHEET_NAME = "Copy of 엘리스_2차_3조_팀프로젝트_사본"
 OUTPUT_DIR = "prompts"
-MAX_REQ_TOKENS  = 8_000      # 요청당 최대 출력 토큰
+# MAX_REQ_TOKENS  = 8_000      # 요청당 최대 출력 토큰
 MAX_TOTAL_TOKENS = 180_000   # 전체 파일 한계
 MAX_WORKERS = 3             # 추가: 병렬 처리시 최대 워커 수
 
 # 단일 시트 처리 함수
-def process_sheet(sheet_name, worksheet, generator, file_manager):
+def process_sheet(sheet_name, worksheet, file_manager):
     try:
         print(f"\n[{sheet_name}] 처리 시작...")
         
         # 구글시트에서 데이터 가져오기(9행 1열부터 시작)
         header_row = worksheet.row_values(9)[1:]
-        rows = worksheet.get_all_records(head=9, expected_headers=header_row)
+        rows = worksheet.get_all_records(head=9, expected_headers=header_row)   
+
+        # 3열 데이터 필터링   
+        filtered_rows = []
+        for row in rows:
+            if row.get(header_row[2]) == "자동화":
+                filtered_rows.append(row)
 
         # 데이터를 프롬프트로 변환
         all_prompts = []
-        for row in rows:
+        for row in filtered_rows:
             prompt_json = PromptGenerator(row).generate()
             all_prompts.append(prompt_json)
         
@@ -51,10 +57,10 @@ worksheets = reader.get_worksheets()[1:]    # 첫 시트는 제외함
 
 # TestCodeGenerator 초기화
 generator = TestCodeGenerator(
-    model_name="claude-3-7-sonnet-20250219",
-    temperature=0.3,
+    # model_name="claude-3-7-sonnet-20250219",
+    # temperature=0.3,
     system_prompt=ui_requirement,
-    max_tokens_per_request=MAX_REQ_TOKENS
+    # max_tokens_per_request=MAX_REQ_TOKENS
 )
 
 start_time = time.time()
