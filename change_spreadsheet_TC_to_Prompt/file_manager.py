@@ -25,23 +25,6 @@ class FileManager:
             json.dump(prompt_data, f, indent=2, ensure_ascii=False)  # 한글도 깨지지 않도록
         print(f"[저장 완료] {filepath}")
 
-    # 테스트코드를 .py로 저장하는 함수
-    # def save_test_code(self, response, sheet_name):
-    #     filepath = os.path.join(self.test_code_dir, f"{sheet_name}.py")
-        
-    #     # response가 청크 리스트인 경우 처리
-    #     full_text = ""
-    #     if isinstance(response, list):
-    #         for chunk in response:
-    #             full_text += chunk or ""  # "" : None 방지
-    #     else:
-    #         full_text = response  # 이미 문자열인 경우
-        
-    #     with open(filepath, "w", encoding="utf-8") as f:
-    #         f.write(full_text)
-
-    #     print(f"{sheet_name} 테스트 코드 단일파일로 저장 완료")
-
     # 주석에서 파일명을 인식하여 여러 파일로 분리 저장하는 함수
     def save_test_code_as_multiple_files(self, response, sheet_name, base_dir=None):
         # 기본 디렉터리 설정
@@ -63,19 +46,37 @@ class FileManager:
             return []
         
         # 찾은 파일명과 내용으로 파일 생성
+        cleaned_sheet_name = re.sub(r"^\d+\.\s*", "", sheet_name)  # "1. 인증" -> "인증"
         created_files = []
         for filename, file_content in matches:
             filename = filename.strip()
-            file_content = remove_python_tags(file_content)     
+            file_content = remove_python_tags(file_content)
 
-            # "test" 또는 "locator"로 시작하는 경우 파일명에 sheet_name 추가
-            if filename == "test_data" or filename.startswith("locator"):
+            # .txt 파일 처리
+            if filename.endswith(".txt"):
+                target_filename = filename  # .txt 파일은 그대로 저장
+            elif filename == "test_data" or filename.startswith("locator"):
                 target_filename = f"{filename}.py"
             elif filename.startswith("test"):
-                target_filename = f"{filename}_{sheet_name}.py"
+                if cleaned_sheet_name not in filename:
+                    target_filename = f"{filename}_{cleaned_sheet_name}.py"
+                else:
+                    target_filename = f"{filename}.py"
             else:
                 target_filename = f"{filename}.py"
-            # 파일명에 따라 저장 경로 결정 및 생성성
+
+
+            # if filename == "test_data" or filename.startswith("locator"):
+            #     target_filename = f"{filename}.py"
+            # elif filename.startswith("test"):
+            #     # 중복 방지: filename에 cleaned_sheet_name이 이미 포함되어 있는지 확인
+            #     if cleaned_sheet_name not in filename:
+            #         target_filename = f"{filename}_{cleaned_sheet_name}.py"
+            #     else:
+            #         target_filename = f"{filename}.py"
+            # else:
+            #     target_filename = f"{filename}.py"
+            # 파일명에 따라 저장 경로 결정 및 생성
             target_dir = self._get_target_directory(filename)
             os.makedirs(target_dir, exist_ok=True)
             filepath = os.path.join(target_dir, target_filename)
@@ -117,9 +118,3 @@ class FileManager:
 
         # 기본값은 default 디렉토리 사용
         return self.directory_mapping["default"]
-
-    # 프롬프트 파일을 읽는 함수
-    # def read_prompt_json(self, sheet_name):
-    #     filepath = os.path.join(self.prompt_dir, f"{sheet_name}.json")
-    #     with open(filepath, "r", encoding="utf-8") as f:
-    #         return f.read()
