@@ -22,6 +22,8 @@ def remove_python_tags(content: str) -> str:
 
 # api 응답에서 파일명과 내용 추출하는 함수
 def extract_filenames_and_contents(full_text):
-    pattern = r"#\s*([\w_]+)\.py\b(.*?)(?=(?:\n#\s*[\w_]+\.py\b)|\Z)"
+    # .py와 .ini 파일 모두 매칭 가능한 정규식 패턴
+    pattern = r"#\s*([\w_]+)\.(py|ini)\b(.*?)(?=(?:\n#\s*[\w_]+\.(py|ini)\b)|\Z)"
     matches = re.findall(pattern, full_text, re.DOTALL)
+
     return [(filename.strip(), content.strip()) for filename, content in matches]
