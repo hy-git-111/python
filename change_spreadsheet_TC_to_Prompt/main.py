@@ -13,7 +13,7 @@ sys.stdout.reconfigure(encoding='utf-8')
 CREDENTIALS = "credentials.json"
 SHEET_NAME = "Copy of 엘리스_2차_3조_팀프로젝트_사본"
 OUTPUT_DIR = "prompts"
-# MAX_REQ_TOKENS  = 8_000      # 요청당 최대 출력 토큰
+MAX_REQ_TOKENS  = 8_000      # 요청당 최대 출력 토큰
 MAX_TOTAL_TOKENS = 180_000   # 전체 파일 한계
 MAX_WORKERS = 3             # 추가: 병렬 처리시 최대 워커 수
 
@@ -57,10 +57,10 @@ worksheets = reader.get_worksheets()[1:]    # 첫 시트는 제외함
 
 # TestCodeGenerator 초기화
 generator = TestCodeGenerator(
-    # model_name="claude-3-7-sonnet-20250219",
-    # temperature=0.3,
+    model_name="claude-3-7-sonnet-20250219",
+    temperature=0.3,
     system_prompt=ui_requirement,
-    # max_tokens_per_request=MAX_REQ_TOKENS
+    max_tokens_per_request=MAX_REQ_TOKENS
 )
 
 start_time = time.time()
