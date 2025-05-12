@@ -24,12 +24,4 @@ def remove_python_tags(content: str) -> str:
 def extract_filenames_and_contents(full_text):
     pattern = r"#\s*([\w_]+)\.py\b(.*?)(?=(?:\n#\s*[\w_]+\.py\b)|\Z)"
     matches = re.findall(pattern, full_text, re.DOTALL)
-    
-    # 파일명 후처리: "_1." 제거
-    processed_matches = []
-    for filename, content in matches:
-        # "_1."과 같은 불필요한 부분 제거
-        filename = re.sub(r"_\d+\.\s*", "_", filename)  # "test_data_1. auth" -> "test_data_auth"
-        processed_matches.append((filename.strip(), content.strip()))
-
-    return processed_matches
+    return [(filename.strip(), content.strip()) for filename, content in matches]
