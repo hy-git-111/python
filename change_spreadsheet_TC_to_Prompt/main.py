@@ -18,23 +18,28 @@ MAX_TOTAL_TOKENS = 180_000   # 전체 파일 한계
 MAX_WORKERS = 3             # 추가: 병렬 처리시 최대 워커 수
 
 # 단일 시트 처리 함수
-def process_sheet(sheet_name, worksheet, file_manager):
+def process_sheet(sheet_name, worksheet, file_manager, generator):
     try:
         print(f"\n[{sheet_name}] 처리 시작...")
         
         # 구글시트에서 데이터 가져오기(9행 1열부터 시작)
-        header_row = worksheet.row_values(9)[1:]
-        rows = worksheet.get_all_records(head=9, expected_headers=header_row)   
+        header_row = worksheet.row_values(9)[1:]  # 9행의 헤더를 가져옴
+        # print(f"헤더: {header_row}")  # 디버깅용 출력
+        rows = worksheet.get_all_records(head=9, expected_headers=header_row)  # 데이터를 가져옴
+        # print(f"데이터: {rows}")  # 디버깅용 출력
 
-        # 3열 데이터 필터링   
-        filtered_rows = []
-        for row in rows:
-            if row.get(header_row[2]) == "자동화":
-                filtered_rows.append(row)
+        # 3열 데이터 필터링
+        # filtered_rows = []
+        # for row in rows:
+        #     if isinstance(row, dict):  # row가 딕셔너리인지 확인
+        #         if row.get(header_row[2]) == "자동화":  # 3열 데이터가 "자동화"인 경우
+        #             filtered_rows.append(row)
+        #     else:
+        #         print(f"잘못된 데이터 형식: {row}")  # 디버깅용 출력
 
         # 데이터를 프롬프트로 변환
         all_prompts = []
-        for row in filtered_rows:
+        for row in rows:
             prompt_json = PromptGenerator(row).generate()
             all_prompts.append(prompt_json)
         
@@ -73,7 +78,7 @@ all_prompts_dict = {}
 with concurrent.futures.ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
     # 각 워크시트에 대한 작업 제출
     future_to_sheet = {
-        executor.submit(process_sheet, ws.title, ws, generator, file_manager): ws.title
+        executor.submit(process_sheet, ws.title, ws, file_manager, generator): ws.title
         for ws in worksheets
     }
 
