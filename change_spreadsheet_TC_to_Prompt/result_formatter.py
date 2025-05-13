@@ -26,4 +26,4 @@ def extract_filenames_and_contents(full_text):
     pattern = r"#\s*([\w_]+)\.(py|ini)\b(.*?)(?=(?:\n#\s*[\w_]+\.(py|ini)\b)|\Z)"
     matches = re.findall(pattern, full_text, re.DOTALL)
 
-    return [(filename.strip(), content.strip()) for filename, content in matches]
+    return [(f"{filename}.{ext}".strip(), content.strip()) for filename, ext, content, _ in matches]
