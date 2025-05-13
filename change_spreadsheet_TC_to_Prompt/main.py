@@ -22,20 +22,15 @@ def process_sheet(sheet_name, worksheet, file_manager, generator):
     try:
         print(f"\n[{sheet_name}] 처리 시작...")
         
-        # 구글시트에서 데이터 가져오기(9행 1열부터 시작)
-        header_row = worksheet.row_values(9)[1:]  # 9행의 헤더를 가져옴
-        # print(f"헤더: {header_row}")  # 디버깅용 출력
-        rows = worksheet.get_all_records(head=9, expected_headers=header_row)  # 데이터를 가져옴
-        # print(f"데이터: {rows}")  # 디버깅용 출력
+        # 구글시트에서 데이터 가져오기(9행부터 시작)
+        rows = worksheet.get_all_records(head=9)
 
         # 3열 데이터 필터링
-        # filtered_rows = []
-        # for row in rows:
-        #     if isinstance(row, dict):  # row가 딕셔너리인지 확인
-        #         if row.get(header_row[2]) == "자동화":  # 3열 데이터가 "자동화"인 경우
-        #             filtered_rows.append(row)
-        #     else:
-        #         print(f"잘못된 데이터 형식: {row}")  # 디버깅용 출력
+        rows = [row for row in rows if row.get("구분") == "자동화"]
+
+        if not rows:
+            print(f"[{sheet_name}] '자동화' 테스트 케이스 없음 → 건너뜀")
+            return {"sheet": sheet_name, "status": "skipped"}
 
         # 데이터를 프롬프트로 변환
         all_prompts = []
